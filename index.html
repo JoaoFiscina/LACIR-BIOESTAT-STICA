@@ -8,6 +8,21 @@
   <link rel="icon" type="image/png" href="./logo lacir.png" />
   <meta name="description"
     content="Plataforma modular de testes estatísticos para pesquisadores e estudantes de medicina — LACIR" />
+  <script>
+    (() => {
+      const storageKey = 'lacirstat-theme';
+      const storedTheme = (() => {
+        try {
+          return localStorage.getItem(storageKey);
+        } catch {
+          return null;
+        }
+      })();
+      const theme = storedTheme === 'light' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
@@ -42,6 +57,13 @@
 
       <!-- Right side -->
       <div class="lacir-header-right">
+        <div class="theme-switcher" role="group" aria-label="Alternar tema">
+          <span class="theme-switcher-label">Tema</span>
+          <div class="theme-switcher-options">
+            <button type="button" class="theme-switcher-btn" data-theme-option="dark" aria-pressed="false">Escuro</button>
+            <button type="button" class="theme-switcher-btn" data-theme-option="light" aria-pressed="false">Claro</button>
+          </div>
+        </div>
         <a href="http://tabnet.datasus.gov.br/cgi/tabcgi.exe?sih/cnv/niba.def" target="_blank" rel="noopener noreferrer"
           class="lacir-header-btn">
           Portal DATASUS <span style="margin-left:4px; font-size:0.8rem; opacity:0.7;">↗</span>

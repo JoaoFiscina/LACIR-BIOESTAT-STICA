@@ -32,61 +32,107 @@ Chart.register(
   Filler
 );
 
-/** Palette matching LACIR dark theme */
-const COLORS = {
+const FALLBACK_THEME = {
   primary: '#22c55e',
-  primaryLight: 'rgba(34,197,94,0.18)',
+  primarySoft: 'rgba(34,197,94,0.18)',
   blue: '#3b82f6',
-  blueLight: 'rgba(59,130,246,0.15)',
+  blueSoft: 'rgba(59,130,246,0.15)',
   teal: '#14b8a6',
-  tealLight: 'rgba(20,184,166,0.15)',
+  tealSoft: 'rgba(20,184,166,0.15)',
   warning: '#f59e0b',
   danger: '#ef4444',
-  dangerLight: 'rgba(239,68,68,0.18)',
+  dangerSoft: 'rgba(239,68,68,0.18)',
   grid: 'rgba(255,255,255,0.07)',
   tick: 'rgba(255,255,255,0.45)',
   label: 'rgba(255,255,255,0.65)',
-  background: '#0f1117'
+  border: 'rgba(255,255,255,0.1)',
+  tooltipBg: 'rgba(15,17,23,0.95)',
+  tooltipBorder: 'rgba(34,197,94,0.35)',
+  tooltipBody: '#e5e7eb',
+  canvasBg: '#0f1117'
 };
 
-const BASE_OPTS = {
-  responsive: true,
-  maintainAspectRatio: false,
-  animation: { duration: 600, easing: 'easeOutQuart' },
-  plugins: {
-    legend: {
-      labels: {
-        color: COLORS.label,
-        font: { family: "'Inter', sans-serif", size: 12 },
-        boxWidth: 14,
-        padding: 16
+function readThemeToken(name, fallback) {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return value || fallback;
+}
+
+function getChartTheme() {
+  return {
+    primary: readThemeToken('--chart-primary', FALLBACK_THEME.primary),
+    primarySoft: readThemeToken('--chart-primary-soft', FALLBACK_THEME.primarySoft),
+    blue: readThemeToken('--chart-blue', FALLBACK_THEME.blue),
+    blueSoft: readThemeToken('--chart-blue-soft', FALLBACK_THEME.blueSoft),
+    teal: readThemeToken('--chart-teal', FALLBACK_THEME.teal),
+    tealSoft: readThemeToken('--chart-teal-soft', FALLBACK_THEME.tealSoft),
+    warning: readThemeToken('--chart-warning', FALLBACK_THEME.warning),
+    danger: readThemeToken('--chart-danger', FALLBACK_THEME.danger),
+    dangerSoft: readThemeToken('--chart-danger-soft', FALLBACK_THEME.dangerSoft),
+    grid: readThemeToken('--chart-grid', FALLBACK_THEME.grid),
+    tick: readThemeToken('--chart-tick', FALLBACK_THEME.tick),
+    label: readThemeToken('--chart-label', FALLBACK_THEME.label),
+    border: readThemeToken('--chart-axis-border', FALLBACK_THEME.border),
+    tooltipBg: readThemeToken('--chart-tooltip-bg', FALLBACK_THEME.tooltipBg),
+    tooltipBorder: readThemeToken('--chart-tooltip-border', FALLBACK_THEME.tooltipBorder),
+    tooltipBody: readThemeToken('--chart-tooltip-body', FALLBACK_THEME.tooltipBody),
+    canvasBg: readThemeToken('--chart-canvas-bg', FALLBACK_THEME.canvasBg)
+  };
+}
+
+function buildBaseOptions(theme) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 600, easing: 'easeOutQuart' },
+    plugins: {
+      legend: {
+        labels: {
+          color: theme.label,
+          font: { family: "'Inter', sans-serif", size: 12 },
+          boxWidth: 14,
+          padding: 16
+        }
+      },
+      tooltip: {
+        backgroundColor: theme.tooltipBg,
+        borderColor: theme.tooltipBorder,
+        borderWidth: 1,
+        titleColor: theme.primary,
+        bodyColor: theme.tooltipBody,
+        padding: 12,
+        cornerRadius: 8,
+        titleFont: { family: "'Inter', sans-serif", weight: '600', size: 12 },
+        bodyFont: { family: "'Inter', sans-serif", size: 12 }
       }
     },
-    tooltip: {
-      backgroundColor: 'rgba(15,17,23,0.95)',
-      borderColor: 'rgba(34,197,94,0.35)',
-      borderWidth: 1,
-      titleColor: COLORS.primary,
-      bodyColor: '#e5e7eb',
-      padding: 12,
-      cornerRadius: 8,
-      titleFont: { family: "'Inter', sans-serif", weight: '600', size: 12 },
-      bodyFont: { family: "'Inter', sans-serif", size: 12 }
+    scales: {
+      x: {
+        ticks: { color: theme.tick, font: { size: 11 } },
+        grid: { color: theme.grid },
+        border: { color: theme.border }
+      },
+      y: {
+        ticks: { color: theme.tick, font: { size: 11 } },
+        grid: { color: theme.grid, drawBorder: false },
+        border: { color: theme.border }
+      }
     }
-  },
-  scales: {
-    x: {
-      ticks: { color: COLORS.tick, font: { size: 11 } },
-      grid: { color: COLORS.grid },
-      border: { color: 'rgba(255,255,255,0.1)' }
-    },
-    y: {
-      ticks: { color: COLORS.tick, font: { size: 11 } },
-      grid: { color: COLORS.grid, drawBorder: false },
-      border: { color: 'rgba(255,255,255,0.1)' }
-    }
+  };
+}
+
+const chartCanvasBackgroundPlugin = {
+  id: 'lacir-theme-canvas-background',
+  beforeDraw(chart) {
+    const { ctx, canvas } = chart;
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-over';
+    ctx.fillStyle = getChartTheme().canvasBg;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
   }
 };
+
+Chart.register(chartCanvasBackgroundPlugin);
 
 /** Keeps a registry of Chart instances to destroy before re-creation */
 const registry = new Map();
@@ -99,9 +145,18 @@ function destroyChart(id) {
   }
 }
 
-function register(id, instance) {
+function register(id, instance, rerender) {
+  instance.$lacirRerender = rerender;
   registry.set(id, instance);
   return instance;
+}
+
+export function refreshRegisteredChartsTheme() {
+  const rerenderQueue = [...registry.values()]
+    .map(chart => chart?.$lacirRerender)
+    .filter(rerender => typeof rerender === 'function');
+
+  rerenderQueue.forEach(rerender => rerender());
 }
 
 /**
@@ -158,6 +213,8 @@ export function renderScatterChart(canvasId, dataset, pearson, outlierFlags, uti
   destroyChart(canvasId);
   const canvas = document.getElementById(canvasId);
   if (!canvas) return null;
+  const theme = getChartTheme();
+  const baseOptions = buildBaseOptions(theme);
 
   const n = dataset.x.length;
   const minX = Math.min(...dataset.x);
@@ -188,7 +245,7 @@ export function renderScatterChart(canvasId, dataset, pearson, outlierFlags, uti
           label: 'Linha de regressão',
           data: [{ x: rxMin, y: ryMin }, { x: rxMax, y: ryMax }],
           type: 'line',
-          borderColor: COLORS.primary,
+          borderColor: theme.primary,
           borderWidth: 2.5,
           borderDash: [],
           pointRadius: 0,
@@ -201,8 +258,8 @@ export function renderScatterChart(canvasId, dataset, pearson, outlierFlags, uti
             ? `${dataset.headers[0]} × ${dataset.headers[1]}`
             : 'Pontos',
           data: normal.map(p => ({ x: p.x, y: p.y, label: p.label })),
-          backgroundColor: COLORS.blueLight,
-          borderColor: COLORS.blue,
+          backgroundColor: theme.blueSoft,
+          borderColor: theme.blue,
           borderWidth: 2,
           pointRadius: 6,
           pointHoverRadius: 9,
@@ -211,8 +268,8 @@ export function renderScatterChart(canvasId, dataset, pearson, outlierFlags, uti
         outliers.length ? {
           label: 'Possíveis outliers',
           data: outliers.map(p => ({ x: p.x, y: p.y, label: p.label })),
-          backgroundColor: COLORS.dangerLight,
-          borderColor: COLORS.danger,
+          backgroundColor: theme.dangerSoft,
+          borderColor: theme.danger,
           borderWidth: 2,
           pointRadius: 7,
           pointHoverRadius: 10,
@@ -221,11 +278,11 @@ export function renderScatterChart(canvasId, dataset, pearson, outlierFlags, uti
       ].filter(Boolean)
     },
     options: {
-      ...BASE_OPTS,
+      ...baseOptions,
       plugins: {
-        ...BASE_OPTS.plugins,
+        ...baseOptions.plugins,
         tooltip: {
-          ...BASE_OPTS.plugins.tooltip,
+          ...baseOptions.plugins.tooltip,
           callbacks: {
             title: items => '',
             label: item => {
@@ -238,20 +295,20 @@ export function renderScatterChart(canvasId, dataset, pearson, outlierFlags, uti
       },
       scales: {
         x: {
-          ...BASE_OPTS.scales.x,
+          ...baseOptions.scales.x,
           title: {
             display: true,
             text: dataset.headers?.[0] || 'X',
-            color: COLORS.label,
+            color: theme.label,
             font: { size: 12 }
           }
         },
         y: {
-          ...BASE_OPTS.scales.y,
+          ...baseOptions.scales.y,
           title: {
             display: true,
             text: dataset.headers?.[1] || 'Y',
-            color: COLORS.label,
+            color: theme.label,
             font: { size: 12 }
           }
         }
@@ -259,7 +316,7 @@ export function renderScatterChart(canvasId, dataset, pearson, outlierFlags, uti
     }
   });
 
-  return register(canvasId, chart);
+  return register(canvasId, chart, () => renderScatterChart(canvasId, dataset, pearson, outlierFlags, utils));
 }
 
 // ─── Rank scatter (Spearman) ────────────────────────────────────────────────
@@ -267,6 +324,8 @@ export function renderRankScatterChart(canvasId, dataset, spearman, diagnostics,
   destroyChart(canvasId);
   const canvas = document.getElementById(canvasId);
   if (!canvas) return null;
+  const theme = getChartTheme();
+  const baseOptions = buildBaseOptions(theme);
 
   const n = dataset.x.length;
   const highlighted = new Set(
@@ -291,8 +350,8 @@ export function renderRankScatterChart(canvasId, dataset, spearman, diagnostics,
         {
           label: 'Ranks (X → Y)',
           data: normal.map(p => ({ x: p.rx, y: p.ry, label: p.label })),
-          backgroundColor: COLORS.tealLight,
-          borderColor: COLORS.teal,
+          backgroundColor: theme.tealSoft,
+          borderColor: theme.teal,
           borderWidth: 2,
           pointRadius: 6,
           pointHoverRadius: 9
@@ -300,8 +359,8 @@ export function renderRankScatterChart(canvasId, dataset, spearman, diagnostics,
         high.length ? {
           label: 'Maior diferença de ranks',
           data: high.map(p => ({ x: p.rx, y: p.ry, label: p.label })),
-          backgroundColor: COLORS.dangerLight,
-          borderColor: COLORS.danger,
+          backgroundColor: theme.dangerSoft,
+          borderColor: theme.danger,
           borderWidth: 2,
           pointRadius: 8,
           pointHoverRadius: 11
@@ -309,11 +368,11 @@ export function renderRankScatterChart(canvasId, dataset, spearman, diagnostics,
       ].filter(Boolean)
     },
     options: {
-      ...BASE_OPTS,
+      ...baseOptions,
       plugins: {
-        ...BASE_OPTS.plugins,
+        ...baseOptions.plugins,
         tooltip: {
-          ...BASE_OPTS.plugins.tooltip,
+          ...baseOptions.plugins.tooltip,
           callbacks: {
             title: () => '',
             label: item => {
@@ -324,13 +383,13 @@ export function renderRankScatterChart(canvasId, dataset, spearman, diagnostics,
         }
       },
       scales: {
-        x: { ...BASE_OPTS.scales.x, title: { display: true, text: `Posto de ${dataset.headers?.[0] || 'X'}`, color: COLORS.label, font: { size: 12 } } },
-        y: { ...BASE_OPTS.scales.y, title: { display: true, text: `Posto de ${dataset.headers?.[1] || 'Y'}`, color: COLORS.label, font: { size: 12 } } }
+        x: { ...baseOptions.scales.x, title: { display: true, text: `Posto de ${dataset.headers?.[0] || 'X'}`, color: theme.label, font: { size: 12 } } },
+        y: { ...baseOptions.scales.y, title: { display: true, text: `Posto de ${dataset.headers?.[1] || 'Y'}`, color: theme.label, font: { size: 12 } } }
       }
     }
   });
 
-  return register(canvasId, chart);
+  return register(canvasId, chart, () => renderRankScatterChart(canvasId, dataset, spearman, diagnostics, utils));
 }
 
 // ─── Timeseries + Trend line (Prais-Winsten) ────────────────────────────────
@@ -338,6 +397,8 @@ export function renderTimeseriesChart(canvasId, time, observed, fitted, pointLab
   destroyChart(canvasId);
   const canvas = document.getElementById(canvasId);
   if (!canvas) return null;
+  const theme = getChartTheme();
+  const baseOptions = buildBaseOptions(theme);
 
   const chart = new Chart(canvas, {
     type: 'line',
@@ -347,8 +408,8 @@ export function renderTimeseriesChart(canvasId, time, observed, fitted, pointLab
         {
           label: axisLabels.y || 'Observado',
           data: observed,
-          borderColor: COLORS.blue,
-          backgroundColor: COLORS.blueLight,
+          borderColor: theme.blue,
+          backgroundColor: theme.blueSoft,
           borderWidth: 3,
           pointRadius: 6,
           pointHoverRadius: 9,
@@ -359,7 +420,7 @@ export function renderTimeseriesChart(canvasId, time, observed, fitted, pointLab
         {
           label: 'Tendência ajustada (Prais-Winsten)',
           data: fitted,
-          borderColor: COLORS.primary,
+          borderColor: theme.primary,
           backgroundColor: 'transparent',
           borderWidth: 2.5,
           borderDash: [8, 5],
@@ -371,11 +432,11 @@ export function renderTimeseriesChart(canvasId, time, observed, fitted, pointLab
       ]
     },
     options: {
-      ...BASE_OPTS,
+      ...baseOptions,
       plugins: {
-        ...BASE_OPTS.plugins,
+        ...baseOptions.plugins,
         tooltip: {
-          ...BASE_OPTS.plugins.tooltip,
+          ...baseOptions.plugins.tooltip,
           mode: 'index',
           intersect: false,
           callbacks: {
@@ -385,18 +446,18 @@ export function renderTimeseriesChart(canvasId, time, observed, fitted, pointLab
       },
       scales: {
         x: {
-          ...BASE_OPTS.scales.x,
-          title: { display: true, text: axisLabels.x || 'Período', color: COLORS.label, font: { size: 12 } }
+          ...baseOptions.scales.x,
+          title: { display: true, text: axisLabels.x || 'Período', color: theme.label, font: { size: 12 } }
         },
         y: {
-          ...BASE_OPTS.scales.y,
-          title: { display: true, text: axisLabels.y || 'Valor', color: COLORS.label, font: { size: 12 } }
+          ...baseOptions.scales.y,
+          title: { display: true, text: axisLabels.y || 'Valor', color: theme.label, font: { size: 12 } }
         }
       }
     }
   });
 
-  return register(canvasId, chart);
+  return register(canvasId, chart, () => renderTimeseriesChart(canvasId, time, observed, fitted, pointLabels, axisLabels, utils));
 }
 
 // ─── Residual chart (Prais-Winsten) ─────────────────────────────────────────
@@ -404,9 +465,11 @@ export function renderResidualChart(canvasId, time, residuals, pointLabels, axis
   destroyChart(canvasId);
   const canvas = document.getElementById(canvasId);
   if (!canvas) return null;
+  const theme = getChartTheme();
+  const baseOptions = buildBaseOptions(theme);
 
   const colors = residuals.map(r =>
-    r > 0 ? COLORS.primary : COLORS.danger
+    r > 0 ? theme.primary : theme.danger
   );
 
   const chart = new Chart(canvas, {
@@ -425,27 +488,27 @@ export function renderResidualChart(canvasId, time, residuals, pointLabels, axis
       ]
     },
     options: {
-      ...BASE_OPTS,
+      ...baseOptions,
       plugins: {
-        ...BASE_OPTS.plugins,
+        ...baseOptions.plugins,
         tooltip: {
-          ...BASE_OPTS.plugins.tooltip,
+          ...baseOptions.plugins.tooltip,
           callbacks: {
             label: item => `Resíduo: ${utils.fmtNumber(item.parsed.y, 4)}`
           }
         }
       },
       scales: {
-        x: { ...BASE_OPTS.scales.x, title: { display: true, text: axisLabels.x || 'Período', color: COLORS.label, font: { size: 12 } } },
+        x: { ...baseOptions.scales.x, title: { display: true, text: axisLabels.x || 'Período', color: theme.label, font: { size: 12 } } },
         y: {
-          ...BASE_OPTS.scales.y,
-          title: { display: true, text: 'Resíduo (escala log10)', color: COLORS.label, font: { size: 12 } }
+          ...baseOptions.scales.y,
+          title: { display: true, text: 'Resíduo (escala log10)', color: theme.label, font: { size: 12 } }
         }
       }
     }
   });
 
-  return register(canvasId, chart);
+  return register(canvasId, chart, () => renderResidualChart(canvasId, time, residuals, pointLabels, axisLabels, utils));
 }
 
 // ─── T-Student distribution chart (boxplot-style via bar + line) ────────────
@@ -453,6 +516,8 @@ export function renderTStudentDistChart(canvasId, groupA, groupB, labelA, labelB
   destroyChart(canvasId);
   const canvas = document.getElementById(canvasId);
   if (!canvas) return null;
+  const theme = getChartTheme();
+  const baseOptions = buildBaseOptions(theme);
 
   // Build summary stats
   function stats(arr) {
@@ -480,8 +545,8 @@ export function renderTStudentDistChart(canvasId, groupA, groupB, labelA, labelB
         {
           label: 'Média',
           data: [sA.mean, sB.mean],
-          backgroundColor: [COLORS.blueLight, COLORS.primaryLight],
-          borderColor: [COLORS.blue, COLORS.primary],
+          backgroundColor: [theme.blueSoft, theme.primarySoft],
+          borderColor: [theme.blue, theme.primary],
           borderWidth: 2,
           borderRadius: 8,
           borderSkipped: false
@@ -489,11 +554,11 @@ export function renderTStudentDistChart(canvasId, groupA, groupB, labelA, labelB
       ]
     },
     options: {
-      ...BASE_OPTS,
+      ...baseOptions,
       plugins: {
-        ...BASE_OPTS.plugins,
+        ...baseOptions.plugins,
         tooltip: {
-          ...BASE_OPTS.plugins.tooltip,
+          ...baseOptions.plugins.tooltip,
           callbacks: {
             label: item => {
               const s = item.dataIndex === 0 ? sA : sB;
@@ -509,16 +574,16 @@ export function renderTStudentDistChart(canvasId, groupA, groupB, labelA, labelB
         }
       },
       scales: {
-        x: { ...BASE_OPTS.scales.x },
+        x: { ...baseOptions.scales.x },
         y: {
-          ...BASE_OPTS.scales.y,
-          title: { display: true, text: 'Valor médio', color: COLORS.label, font: { size: 12 } }
+          ...baseOptions.scales.y,
+          title: { display: true, text: 'Valor médio', color: theme.label, font: { size: 12 } }
         }
       }
     }
   });
 
-  return register(canvasId, chart);
+  return register(canvasId, chart, () => renderTStudentDistChart(canvasId, groupA, groupB, labelA, labelB, utils));
 }
 
 // ─── T-Student difference chart (Mean Difference + IC95%) ──────────────────
@@ -526,6 +591,8 @@ export function renderTStudentDiffChart(canvasId, result, labels, utils) {
   destroyChart(canvasId);
   const canvas = document.getElementById(canvasId);
   if (!canvas) return null;
+  const theme = getChartTheme();
+  const baseOptions = buildBaseOptions(theme);
 
   const diff = result.diff;
   const low = result.ci[0];
@@ -538,8 +605,8 @@ export function renderTStudentDiffChart(canvasId, result, labels, utils) {
         {
           label: 'Diferença entre médias (IC95%)',
           data: [{ x: diff, y: 0 }],
-          backgroundColor: COLORS.primary,
-          borderColor: COLORS.primary,
+          backgroundColor: theme.primary,
+          borderColor: theme.primary,
           pointRadius: 8,
           pointHoverRadius: 10,
           showLine: false
@@ -547,7 +614,7 @@ export function renderTStudentDiffChart(canvasId, result, labels, utils) {
         {
           label: 'Intervalo de Confiança',
           data: [{ x: low, y: 0 }, { x: high, y: 0 }],
-          borderColor: COLORS.primary,
+          borderColor: theme.primary,
           borderWidth: 2,
           pointRadius: 4,
           showLine: true,
@@ -556,12 +623,12 @@ export function renderTStudentDiffChart(canvasId, result, labels, utils) {
       ]
     },
     options: {
-      ...BASE_OPTS,
+      ...baseOptions,
       indexAxis: 'y',
       plugins: {
-        ...BASE_OPTS.plugins,
+        ...baseOptions.plugins,
         tooltip: {
-          ...BASE_OPTS.plugins.tooltip,
+          ...baseOptions.plugins.tooltip,
           callbacks: {
             title: () => 'Estimativa de Efeito',
             label: item => {
@@ -573,8 +640,8 @@ export function renderTStudentDiffChart(canvasId, result, labels, utils) {
       },
       scales: {
         x: {
-          ...BASE_OPTS.scales.x,
-          title: { display: true, text: 'Diferença das Médias', color: COLORS.label }
+          ...baseOptions.scales.x,
+          title: { display: true, text: 'Diferença das Médias', color: theme.label }
         },
         y: {
           display: false,
@@ -585,7 +652,7 @@ export function renderTStudentDiffChart(canvasId, result, labels, utils) {
     }
   });
 
-  return register(canvasId, chart);
+  return register(canvasId, chart, () => renderTStudentDiffChart(canvasId, result, labels, utils));
 }
 
 // ─── Global export handler ──────────────────────────────────────────────────

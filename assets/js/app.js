@@ -1,8 +1,9 @@
-import { initCanvasExportDelegate } from './chart-manager.js';
+import { initCanvasExportDelegate, refreshRegisteredChartsTheme } from './chart-manager.js';
 const navEl = document.getElementById('test-nav');
 const moduleRoot = document.getElementById('module-root');
 const pageTitle = document.getElementById('page-title');
 const pageSubtitle = document.getElementById('page-subtitle');
+const themeButtons = Array.from(document.querySelectorAll('[data-theme-option]'));
 const sharedState = window.__LACIR_SHARED__ || (window.__LACIR_SHARED__ = {
   datasus: {
     lastSession: null
@@ -21,6 +22,74 @@ const moduleLoaderState = {
   activeModuleId: null,
   activeController: null
 };
+const THEME_STORAGE_KEY = 'lacirstat-theme';
+const DEFAULT_THEME = 'dark';
+const VALID_THEMES = new Set(['dark', 'light']);
+
+function isValidTheme(value) {
+  return VALID_THEMES.has(value);
+}
+
+function getStoredThemePreference() {
+  try {
+    const value = localStorage.getItem(THEME_STORAGE_KEY);
+    return isValidTheme(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function getActiveTheme() {
+  const currentTheme = document.documentElement.dataset.theme;
+  return isValidTheme(currentTheme) ? currentTheme : DEFAULT_THEME;
+}
+
+function updateThemeControls(theme) {
+  themeButtons.forEach(button => {
+    const active = button.dataset.themeOption === theme;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
+}
+
+function applyTheme(theme, options = {}) {
+  const resolvedTheme = isValidTheme(theme) ? theme : DEFAULT_THEME;
+  const root = document.documentElement;
+  const currentTheme = getActiveTheme();
+
+  root.dataset.theme = resolvedTheme;
+  root.style.colorScheme = resolvedTheme;
+  updateThemeControls(resolvedTheme);
+
+  if (options.persist) {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, resolvedTheme);
+    } catch {
+      // Ignore persistence failures and keep the theme applied for this session.
+    }
+  }
+
+  if (!options.skipChartRefresh && currentTheme !== resolvedTheme) {
+    refreshRegisteredChartsTheme();
+  }
+
+  if (currentTheme !== resolvedTheme) {
+    window.dispatchEvent(new CustomEvent('lacir:themechange', {
+      detail: { theme: resolvedTheme }
+    }));
+  }
+}
+
+function initThemeControls() {
+  const initialTheme = getStoredThemePreference() || getActiveTheme() || DEFAULT_THEME;
+  applyTheme(initialTheme, { skipChartRefresh: true });
+
+  themeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      applyTheme(button.dataset.themeOption, { persist: true });
+    });
+  });
+}
 
 const utils = {
   clearElement(el) {
@@ -105,6 +174,10 @@ const utils = {
       minimumFractionDigits: digits
     });
   },
+  getCssVar(name, fallback = '') {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return value || fallback;
+  },
   downloadText(filename, content, type = 'text/plain;charset=utf-8') {
     const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
@@ -134,7 +207,7 @@ const utils = {
       canvas.height = height * scale;
       const ctx = canvas.getContext('2d');
       ctx.scale(scale, scale);
-      ctx.fillStyle = '#0b140b'; // Fundo premium Lacir
+      ctx.fillStyle = this.getCssVar('--chart-canvas-bg', this.getCssVar('--bg', '#0b140b'));
       ctx.fillRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
       URL.revokeObjectURL(url);
@@ -851,8 +924,8 @@ async function bootstrap() {
     utils.showError(moduleRoot, 'Falha ao inicializar a aplicação.');
   }
 }
+initThemeControls();
 bootstrap();
-
 initCanvasExportDelegate();
 
 // Delegação global para botão de informação ℹ
