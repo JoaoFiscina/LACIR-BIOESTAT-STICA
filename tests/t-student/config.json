@@ -1,8 +1,8 @@
 {
   "title": "t de Student",
-  "subtitle": "Comparação simples para saber se a diferença entre dois grupos é real.",
-  "description": "Interface de análise para comparação de médias independentes. Otimizado para formatos tabulares amplos (Wide): unidade;grupo_a;grupo_b;observacao_opcional. Suporte a colagem direta do Excel.",
-  "defaultQuestion": "As médias dos dois grupos são diferentes?",
+  "subtitle": "Comparação simples para avaliar se há evidência de diferença entre dois grupos.",
+  "description": "Interface de análise para comparação de médias entre dois grupos. Otimizado para formatos tabulares amplos (Wide): unidade;grupo_a;grupo_b;observacao_opcional. Suporte a colagem direta do Excel.",
+  "defaultQuestion": "Há diferença entre as médias dos dois grupos?",
   "didacticCards": [
     {
       "title": "O que este teste faz",

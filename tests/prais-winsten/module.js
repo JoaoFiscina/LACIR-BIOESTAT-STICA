@@ -827,7 +827,7 @@ export async function renderTestModule(ctx) {
             <input id="pw-context" type="text" placeholder="Tendência temporal do indicador em dados agregados" value="${utils.escapeHtml(state.context || '')}" />
           </div>
           <div>
-            <label for="pw-alpha">Nível de significância (p-valor)</label>
+            <label for="pw-alpha">Nível de significância (valor de p)</label>
             <select id="pw-alpha">
               <option value="0.01"${state.alpha === '0.01' ? ' selected' : ''}>1%</option>
               <option value="0.05"${state.alpha === '0.05' ? ' selected' : ''}>5%</option>
@@ -1101,7 +1101,7 @@ export async function renderTestModule(ctx) {
     ].join('');
 
     els.charts.innerHTML = [
-      buildChartContainer('pw-chart-trend', `${utils.escapeHtml(dataset.yHeaderLabel)} observada e linha ajustada`, 'Veja a tendência do Prais-Winsten sobre os dados. Passe o mouse para valores exatos.', 'prais-tendencia.png'),
+      buildChartContainer('pw-chart-trend', `${utils.escapeHtml(dataset.yHeaderLabel)}: série observada e linha ajustada`, 'Veja a tendência do Prais-Winsten sobre os dados. Passe o mouse para valores exatos.', 'prais-tendencia.png'),
       buildChartContainer('pw-chart-resid', `Resíduos de ${utils.escapeHtml(dataset.yHeaderLabel)} ao longo de ${utils.escapeHtml(dataset.timeHeaderLabel)}`, 'Barras positivas = acima da tendência; negativas = abaixo. Colunas muito altas sugerem possível padrão residual.', 'prais-residuos.png')
     ].join('');
 

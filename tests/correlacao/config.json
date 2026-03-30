@@ -1,6 +1,6 @@
 {
   "title": "Correlação de Pearson / Spearman",
-  "subtitle": "Veja de forma simples se duas coisas estão relacionadas e se caminham juntas.",
+  "subtitle": "Veja de forma simples se duas variáveis estão relacionadas e se variam em conjunto.",
   "description": "Análise avançada de correlação e associação de dados. Explore a força e a direção do relacionamento entre variáveis com suporte para os métodos de Pearson e Spearman, totalmente adaptado a planilhas no padrão brasileiro e dados do DATASUS.",
   "didacticCards": [
     {
@@ -27,8 +27,8 @@
   "examples": [
     {
       "id": "padrao",
-      "label": "Exemplo no formato padrao",
-      "description": "Base simples no modelo oficial do modulo.",
+      "label": "Exemplo no formato padrão",
+      "description": "Base simples no modelo oficial do módulo.",
       "text": "id;variavel_x;variavel_y;observacao_opcional\nUF1;12,3;45,2;\nUF2;14,1;43,8;\nUF3;10,9;48,0;\nUF4;15,2;42,7;"
     }
   ]

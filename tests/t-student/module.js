@@ -1402,10 +1402,10 @@ export async function renderTestModule(ctx) {
         <div class="form-grid two" style="margin-bottom: 20px;">
           <div>
             <label for="t-context">Pergunta do estudo</label>
-            <input id="t-context" type="text" placeholder="As médias dos dois grupos são diferentes?" value="${utils.escapeHtml(manualState.context || '')}" />
+            <input id="t-context" type="text" placeholder="Há diferença entre as médias dos dois grupos?" value="${utils.escapeHtml(manualState.context || '')}" />
           </div>
           <div>
-            <label for="t-alpha">Nível de significância (p-valor)</label>
+            <label for="t-alpha">Nível de significância (valor de p)</label>
             <select id="t-alpha">
               <option value="0.01"${manualState.alpha === '0.01' ? ' selected' : ''}>1%</option>
               <option value="0.05"${manualState.alpha === '0.05' ? ' selected' : ''}>5%</option>

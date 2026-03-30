@@ -1,6 +1,6 @@
 {
   "title": "Prais-Winsten",
-  "subtitle": "Descubra se os números estão subindo, descendo ou estáveis ao longo do tempo.",
+  "subtitle": "Avalie se a série temporal apresenta tendência crescente, decrescente ou estacionária.",
   "description": "Avaliação especializada de tendências temporais em indicadores de saúde. O motor estatístico identifica séries crescentes, decrescentes ou estacionárias em dados agregados, aplicando correção automática para autocorrelação de primeira ordem.",
   "didacticCards": [
     {
