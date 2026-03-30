@@ -261,6 +261,47 @@ const utils = {
       </div>
     `;
   },
+  bindSectionToggle({ button, panel, collapsed = false, expandLabel = 'Aumentar', collapseLabel = 'Recolher', label = '', onToggle = null } = {}) {
+    if (!button || !panel) return null;
+
+    let isCollapsed = Boolean(collapsed);
+    const suffix = label ? ` ${label}` : '';
+
+    button.type = 'button';
+    if (panel.id) {
+      button.setAttribute('aria-controls', panel.id);
+    }
+
+    const applyState = () => {
+      panel.hidden = isCollapsed;
+      panel.classList.toggle('is-collapsed', isCollapsed);
+      button.classList.toggle('is-collapsed', isCollapsed);
+      button.textContent = isCollapsed ? expandLabel : collapseLabel;
+      button.setAttribute('aria-expanded', String(!isCollapsed));
+      button.setAttribute('aria-label', `${isCollapsed ? expandLabel : collapseLabel}${suffix}`);
+      panel.setAttribute('aria-hidden', String(isCollapsed));
+    };
+
+    button.addEventListener('click', () => {
+      isCollapsed = !isCollapsed;
+      applyState();
+      if (typeof onToggle === 'function') {
+        onToggle(isCollapsed);
+      }
+    });
+
+    applyState();
+
+    return {
+      get collapsed() {
+        return isCollapsed;
+      },
+      setCollapsed(nextValue) {
+        isCollapsed = Boolean(nextValue);
+        applyState();
+      }
+    };
+  },
   parseDelimitedText(text, expectedCols = 2) {
     const clean = this.normalizeImportedText(text).trim();
     if (!clean) return { headers: null, rows: [] };

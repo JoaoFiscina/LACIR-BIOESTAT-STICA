@@ -1415,10 +1415,12 @@ export async function renderTestModule(ctx) {
     manual: {
       paste: '',
       context: '',
-      alpha: '0.05'
+      alpha: '0.05',
+      previewCollapsed: false
     }
   });
   const manualState = moduleState.manual;
+  manualState.previewCollapsed = Boolean(manualState.previewCollapsed);
 
   // Forçar limpeza de textos legados para ativar placeholders
   const legacyTexts = [
@@ -1500,9 +1502,14 @@ export async function renderTestModule(ctx) {
       </section>
 
       <section class="surface-card">
-        <h4>Pré-visualização</h4>
-        <div id="t-preview" class="small-note">Nenhum dado carregado ainda.</div>
-        <div id="t-group-summary" class="metrics-grid t-group-summary" style="margin-top:14px;"></div>
+        <div class="module-section-heading">
+          <h4>Pré-visualização</h4>
+          <button type="button" class="btn-ghost section-toggle-btn" id="t-preview-toggle">Recolher</button>
+        </div>
+        <div id="t-preview-panel" class="module-collapsible-panel">
+          <div id="t-preview" class="small-note">Nenhum dado carregado ainda.</div>
+          <div id="t-group-summary" class="metrics-grid t-group-summary" style="margin-top:14px;"></div>
+        </div>
       </section>
 
       <section class="surface-card tstudent-statistics-section">
@@ -1539,6 +1546,16 @@ export async function renderTestModule(ctx) {
     contextEl: root.querySelector('#t-context'),
     alphaEl: root.querySelector('#t-alpha')
   };
+
+  utils.bindSectionToggle({
+    button: root.querySelector('#t-preview-toggle'),
+    panel: root.querySelector('#t-preview-panel'),
+    collapsed: manualState.previewCollapsed,
+    label: 'da pre-visualizacao',
+    onToggle(collapsed) {
+      manualState.previewCollapsed = collapsed;
+    }
+  });
 
 
   function refreshManualPreview() {

@@ -781,6 +781,7 @@ export async function renderTestModule(ctx) {
       paste: '',
       context: '',
       alpha: '0.05',
+      previewCollapsed: false,
       dataset: buildEmptyPraisDataset(),
       activeSource: 'none',
       fileState: null,
@@ -791,6 +792,7 @@ export async function renderTestModule(ctx) {
   // Ensure new fields are present for sessions created before they were added
   state.alpha = state.alpha || '0.05';
   state.context = state.context || '';
+  state.previewCollapsed = Boolean(state.previewCollapsed);
 
   const exampleText = buildExampleText(config);
 
@@ -874,11 +876,16 @@ export async function renderTestModule(ctx) {
       </section>
 
       <section class="surface-card">
-        <h4>Prévia / revisão</h4>
-        <div id="pw-preview-meta" class="prais-preview-cards"></div>
-        <div id="pw-preview-messages" style="margin-top:14px;"></div>
-        <div id="pw-preview-table" style="margin-top:14px;"></div>
-        <div id="pw-preview-series" style="margin-top:14px;"></div>
+        <div class="module-section-heading">
+          <h4>Prévia / revisão</h4>
+          <button type="button" class="btn-ghost section-toggle-btn" id="pw-preview-toggle">Recolher</button>
+        </div>
+        <div id="pw-preview-panel" class="module-collapsible-panel">
+          <div id="pw-preview-meta" class="prais-preview-cards"></div>
+          <div id="pw-preview-messages" style="margin-top:14px;"></div>
+          <div id="pw-preview-table" style="margin-top:14px;"></div>
+          <div id="pw-preview-series" style="margin-top:14px;"></div>
+        </div>
       </section>
 
       <section class="surface-card">
@@ -911,6 +918,16 @@ export async function renderTestModule(ctx) {
     charts: root.querySelector('#pw-charts'),
     results: root.querySelector('#pw-results')
   };
+
+  utils.bindSectionToggle({
+    button: root.querySelector('#pw-preview-toggle'),
+    panel: root.querySelector('#pw-preview-panel'),
+    collapsed: state.previewCollapsed,
+    label: 'da previa',
+    onToggle(collapsed) {
+      state.previewCollapsed = collapsed;
+    }
+  });
 
   const pasteSectionNote = root.querySelector('#pw-paste')?.closest('section')?.querySelector('.small-note');
   if (pasteSectionNote) {

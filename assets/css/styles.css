@@ -909,6 +909,26 @@ textarea,
   padding: 20px;
 }
 .surface-card h4, .chart-card h4 { margin-bottom: 12px; color: var(--text); font-weight: 700; }
+.module-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.module-section-heading h4 {
+  margin-bottom: 0;
+}
+.module-collapsible-panel {
+  margin-top: 14px;
+  min-width: 0;
+}
+.section-toggle-btn {
+  min-width: 108px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
 .controls-row, .form-grid, .metrics-grid, .actions-row, .result-grid, .chart-grid {
   display: grid; gap: 14px; min-width: 0;
 }

@@ -1170,6 +1170,7 @@ export async function renderTestModule(ctx) {
       paste: '',
       context: '',
       alpha: '0.05',
+      previewCollapsed: false,
       activeMethod: 'pearson',
       dataset: buildEmptyCorrelationDataset(),
       lastResult: null
@@ -1192,6 +1193,7 @@ export async function renderTestModule(ctx) {
   // Ensure new fields are present for sessions created before they were added
   state.alpha = state.alpha || '0.05';
   state.context = state.context || '';
+  state.previewCollapsed = Boolean(state.previewCollapsed);
   datasusState.alpha = datasusState.alpha || '0.05';
   datasusState.context = datasusState.context || '';
 
@@ -1390,11 +1392,16 @@ export async function renderTestModule(ctx) {
         </section>
 
         <section class="surface-card">
-          <h4>Prévia dos dados</h4>
-          <div id="c-preview-meta" class="tabular-preview-stack">
-            <div class="small-note">Nenhum dado lido ainda.</div>
+          <div class="module-section-heading">
+            <h4>Prévia dos dados</h4>
+            <button type="button" class="btn-ghost section-toggle-btn" id="c-preview-toggle">Recolher</button>
           </div>
-          <div id="c-preview-table" style="margin-top:14px;"></div>
+          <div id="c-preview-panel" class="module-collapsible-panel">
+            <div id="c-preview-meta" class="tabular-preview-stack">
+              <div class="small-note">Nenhum dado lido ainda.</div>
+            </div>
+            <div id="c-preview-table" style="margin-top:14px;"></div>
+          </div>
         </section>
 
         <section class="surface-card" style="position:relative;">
@@ -1453,6 +1460,16 @@ export async function renderTestModule(ctx) {
       datasusControls: findInContainer(root, '#c-datasus-controls', { label: 'controles DATASUS', optional: true }),
       datasusPreview: findInContainer(root, '#c-datasus-preview', { label: 'previa DATASUS', optional: true })
     };
+
+    utils.bindSectionToggle({
+      button: root.querySelector('#c-preview-toggle'),
+      panel: root.querySelector('#c-preview-panel'),
+      collapsed: state.previewCollapsed,
+      label: 'da previa dos dados',
+      onToggle(collapsed) {
+        state.previewCollapsed = collapsed;
+      }
+    });
 
     function setIntakeStatus(kind, message) {
       els.intakeStatus.className = toneClass(kind);
