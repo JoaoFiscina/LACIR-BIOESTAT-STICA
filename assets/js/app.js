@@ -310,6 +310,10 @@ const utils = {
   }
 };
 
+const PRAIS_MAX_ITERATIONS = 100;
+const PRAIS_RHO_TOLERANCE = 1e-8;
+const PRAIS_RHO_LIMIT = 0.999999;
+
 const Stats = {
   parseNumber(raw) {
     if (raw === null || raw === undefined) return null;
@@ -546,54 +550,71 @@ const Stats = {
     const seBeta = Math.sqrt(s2 * inv11);
     return { alpha, beta, resid, df, seBeta };
   },
+  stabilizePraisRho(rho) {
+    if (!Number.isFinite(rho)) {
+      return { rho: 0, clipped: false };
+    }
+
+    // Keep rho strictly inside (-1, 1) so the Prais-Winsten weights remain defined.
+    if (Math.abs(rho) > PRAIS_RHO_LIMIT) {
+      return {
+        rho: rho < 0 ? -PRAIS_RHO_LIMIT : PRAIS_RHO_LIMIT,
+        clipped: true
+      };
+    }
+
+    return { rho, clipped: false };
+  },
   transformPraisWinsten(x, y, rho) {
-    const droppedFirst = Math.abs(rho) >= 1;
+    const safeRho = this.stabilizePraisRho(rho).rho;
     const cT = [];
     const xT = [];
     const yT = [];
-
-    if (!droppedFirst) {
-      const firstWeight = Math.sqrt(Math.max(0, 1 - (rho * rho)));
-      cT.push(firstWeight);
-      xT.push(firstWeight * x[0]);
-      yT.push(firstWeight * y[0]);
-    }
+    const firstWeight = Math.sqrt(Math.max(0, 1 - (safeRho * safeRho)));
+    cT.push(firstWeight);
+    xT.push(firstWeight * x[0]);
+    yT.push(firstWeight * y[0]);
 
     for (let index = 1; index < y.length; index += 1) {
-      cT.push(1 - rho);
-      xT.push(x[index] - (rho * x[index - 1]));
-      yT.push(y[index] - (rho * y[index - 1]));
+      cT.push(1 - safeRho);
+      xT.push(x[index] - (safeRho * x[index - 1]));
+      yT.push(y[index] - (safeRho * y[index - 1]));
     }
 
-    return { cT, xT, yT, droppedFirst };
+    return { cT, xT, yT, droppedFirst: false };
   },
   estimateRhoDetails(resid) {
+    if (resid.length < 2) {
+      return { rho: 0, rawRho: 0, clipped: false };
+    }
+
+    const meanResid = this.mean(resid);
     let num = 0;
     let den = 0;
 
     for (let index = 1; index < resid.length; index += 1) {
-      num += resid[index] * resid[index - 1];
-      den += resid[index - 1] * resid[index - 1];
+      const current = resid[index] - meanResid;
+      const previous = resid[index - 1] - meanResid;
+      num += current * previous;
+    }
+
+    for (let index = 0; index < resid.length; index += 1) {
+      const centered = resid[index] - meanResid;
+      den += centered * centered;
     }
 
     if (Math.abs(den) < 1e-15) {
       return { rho: 0, rawRho: 0, clipped: false };
     }
 
+    // Use the lag-1 residual autocorrelation so rho stays coherent with a stationary AR(1).
     const rawRho = num / den;
     if (!Number.isFinite(rawRho)) {
       return { rho: 0, rawRho: 0, clipped: false };
     }
 
-    if (Math.abs(rawRho) > 1) {
-      return {
-        rho: rawRho < 0 ? -1 : 1,
-        rawRho,
-        clipped: true
-      };
-    }
-
-    return { rho: rawRho, rawRho, clipped: false };
+    const rhoInfo = this.stabilizePraisRho(rawRho);
+    return { rho: rhoInfo.rho, rawRho, clipped: rhoInfo.clipped };
   },
   estimateRho(resid) {
     return this.estimateRhoDetails(resid).rho;
@@ -611,20 +632,20 @@ const Stats = {
     let converged = false;
     let iterations = 0;
 
-    for (let iter = 0; iter < 100; iter += 1) {
+    for (let iter = 0; iter < PRAIS_MAX_ITERATIONS; iter += 1) {
       const previousRho = rho;
       const rhoInfo = this.estimateRhoDetails(residuals);
       rho = rhoInfo.rho;
       rhoRaw = rhoInfo.rawRho;
-      rhoClipped = rhoClipped || rhoInfo.clipped;
+      rhoClipped = rhoInfo.clipped;
 
       const transformed = this.transformPraisWinsten(x, y, rho);
-      droppedFirst = droppedFirst || transformed.droppedFirst;
+      droppedFirst = transformed.droppedFirst;
       fit = this.olsTransformed(transformed.cT, transformed.xT, transformed.yT);
       residuals = y.map((value, index) => value - (fit.alpha + (fit.beta * x[index])));
       iterations = iter + 1;
 
-      if (Math.abs(rho - previousRho) < 1e-8) {
+      if (Math.abs(rho - previousRho) < PRAIS_RHO_TOLERANCE) {
         converged = true;
         break;
       }
