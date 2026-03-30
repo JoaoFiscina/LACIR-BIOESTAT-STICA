@@ -40,9 +40,9 @@ const CORRELATION_POSITION_FALLBACK = {
   keysByIndex: ['id', 'variavel_x', 'variavel_y', 'observacao_opcional'],
   minColumns: 3,
   requiredKeys: ['variavel_x', 'variavel_y'],
-  introText: 'Nao reconhecemos os nomes padrao das colunas, entao usamos a estrutura por posicao da planilha.',
-  assumptionText: 'Assumimos: 1a coluna = identificacao, 2a = variavel x, 3a = variavel y.',
-  headerText: 'Os nomes do cabecalho foram aproveitados automaticamente na interface.'
+  introText: 'Não reconhecemos os nomes padrão das colunas, então usamos a estrutura por posição da planilha.',
+  assumptionText: 'Assumimos: 1ª coluna = identificação, 2ª = variavel x, 3ª = variavel y.',
+  headerText: 'Os nomes do cabeçalho foram aproveitados automaticamente na interface.'
 };
 const CORRELATION_TABULAR_OPTIONS = {
   aliases: CORRELATION_HEADER_ALIASES,
@@ -252,18 +252,18 @@ function compareMessage(pearson, spearman) {
   const pearsonDir = Math.sign(pearson.coef || 0);
   const spearmanDir = Math.sign(spearman.coef || 0);
   if (pearsonDir && spearmanDir && pearsonDir !== spearmanDir) {
-    return 'Pearson e Spearman apontaram direcoes diferentes, sinal de estrutura instavel ou alta sensibilidade a pontos extremos.';
+    return 'Pearson e Spearman apontaram direções diferentes, sinal de estrutura instável ou alta sensibilidade a pontos extremos.';
   }
   if ((Math.abs(spearman.coef) - Math.abs(pearson.coef)) > 0.18) {
-    return 'Spearman ficou substancialmente maior que Pearson, sugerindo relacao monotona com curvatura ou compressao nos extremos.';
+    return 'Spearman ficou substancialmente maior que Pearson, sugerindo relação monótona com curvatura ou compressão nos extremos.';
   }
   if ((Math.abs(pearson.coef) - Math.abs(spearman.coef)) > 0.18) {
-    return 'Pearson ficou acima de Spearman, indicando que a reta linear parece forte, mas a ordenacao relativa nao foi tao estavel quanto a inclinacao sugere.';
+    return 'Pearson ficou acima de Spearman, indicando que a reta linear parece forte, mas a ordenação relativa não foi tão estável quanto a inclinação sugere.';
   }
   if (gap > 0.12) {
-    return 'Pearson e Spearman diferiram moderadamente; vale revisar linearidade, residuos e possiveis outliers antes de interpretar.';
+    return 'Pearson e Spearman diferiram moderadamente; vale revisar linearidade, resíduos e possíveis outliers antes de interpretar.';
   }
-  return 'Pearson e Spearman foram semelhantes, sugerindo que a associacao monotona esta proxima de uma leitura linear.';
+  return 'Pearson e Spearman foram semelhantes, sugerindo que a associação monótona está próxima de uma leitura linear.';
 }
 
 function correlationMetricCard(label, value, note, extraClass = '') {
@@ -285,37 +285,37 @@ function buildMethodInterpretation(dataset, pearson, spearman, outlierLabels, ac
     const tieParts = [];
     if (rankSummary.xTies.groups) tieParts.push(`${rankSummary.xTies.groups} empate(s) em ${xName}`);
     if (rankSummary.yTies.groups) tieParts.push(`${rankSummary.yTies.groups} empate(s) em ${yName}`);
-    let text = `O metodo de Spearman mede associacao monotona com base nos postos de ${xName} e ${yName}. `;
+    let text = `O método de Spearman mede associação monótona com base nos postos de ${xName} e ${yName}. `;
     text += spearman.p < 0.05
-      ? `Observou-se evidencia estatistica de associacao monotona (${utils.fmtSigned(spearman.coef, 3)}; p ${spearman.p < 0.001 ? '< 0,001' : '= ' + utils.fmtP(spearman.p)}). `
-      : `Nao houve evidencia estatistica robusta de associacao monotona (${utils.fmtSigned(spearman.coef, 3)}; p ${utils.fmtP(spearman.p)}). `;
-    text += `A direcao foi ${direction} e a forca foi classificada como ${strength}, olhando a ordenacao relativa dos valores em vez da reta linear. `;
+      ? `Observou-se evidência estatística de associação monótona (${utils.fmtSigned(spearman.coef, 3)}; p ${spearman.p < 0.001 ? '< 0,001' : '= ' + utils.fmtP(spearman.p)}). `
+      : `Não houve evidência estatística robusta de associação monótona (${utils.fmtSigned(spearman.coef, 3)}; p ${utils.fmtP(spearman.p)}). `;
+    text += `A direção foi ${direction} e a força foi classificada como ${strength}, considerando a ordenação relativa dos valores em vez da reta linear. `;
     text += tieParts.length
-      ? `Empates foram tratados por postos medios na implementacao atual (${tieParts.join(' e ')}). `
-      : 'Nao houve empates nas observacoes, entao cada posto ficou unico. ';
+      ? `Os empates foram resolvidos por postos médios antes do cálculo do coeficiente (${tieParts.join(' e ')}). `
+      : 'Não houve empates nas observações, então cada posto ficou único. ';
     if (gap > 0.15) {
-      text += `Como Pearson (${utils.fmtSigned(pearson.coef, 3)}) e Spearman (${utils.fmtSigned(spearman.coef, 3)}) divergiram de forma relevante, vale suspeitar de nao linearidade ou sensibilidade de Pearson a pontos extremos.`;
+      text += `Como Pearson (${utils.fmtSigned(pearson.coef, 3)}) e Spearman (${utils.fmtSigned(spearman.coef, 3)}) divergiram de forma relevante, vale suspeitar de não linearidade ou de sensibilidade de Pearson a pontos extremos.`;
     } else {
-      text += `O coeficiente linear de Pearson (${utils.fmtSigned(pearson.coef, 3)}) ficou proximo, reforcando uma leitura consistente entre linearidade e monotonicidade.`;
+      text += `O coeficiente linear de Pearson (${utils.fmtSigned(pearson.coef, 3)}) ficou próximo, reforçando uma leitura consistente entre linearidade e monotonicidade.`;
     }
     return text;
   }
 
   const direction = classifyDirection(pearson.coef);
   const strength = classifyStrength(pearson.coef);
-  let text = `O metodo de Pearson mede associacao linear entre ${xName} e ${yName} usando os valores numericos brutos. `;
+  let text = `O método de Pearson mede associação linear entre ${xName} e ${yName} usando os valores numéricos brutos. `;
   text += pearson.p < 0.05
-    ? `Observou-se evidencia estatistica de relacao linear (${utils.fmtSigned(pearson.coef, 3)}; p ${pearson.p < 0.001 ? '< 0,001' : '= ' + utils.fmtP(pearson.p)}). `
-    : `Nao houve evidencia estatistica robusta de relacao linear (${utils.fmtSigned(pearson.coef, 3)}; p ${utils.fmtP(pearson.p)}). `;
-  text += `A direcao foi ${direction} e a forca foi classificada como ${strength}, com foco na aproximacao por reta. `;
-  text += `A inclinacao linear estimada foi ${utils.fmtSigned(pearson.slope, 3)} em ${yName} para cada 1 unidade em ${xName}. `;
+    ? `Observou-se evidência estatística de relação linear (${utils.fmtSigned(pearson.coef, 3)}; p ${pearson.p < 0.001 ? '< 0,001' : '= ' + utils.fmtP(pearson.p)}). `
+    : `Não houve evidência estatística robusta de relação linear (${utils.fmtSigned(pearson.coef, 3)}; p ${utils.fmtP(pearson.p)}). `;
+  text += `A direção foi ${direction} e a força foi classificada como ${strength}, com foco na aproximação por reta. `;
+  text += `A inclinação linear estimada foi ${utils.fmtSigned(pearson.slope, 3)} em ${yName} para cada 1 unidade em ${xName}. `;
   if (outlierLabels.length) {
-    text += `Foram detectados possiveis pontos extremos (${outlierLabels.slice(0, 4).join(', ')}${outlierLabels.length > 4 ? ', ...' : ''}), lembrando que Pearson tende a ser mais sensivel a outliers. `;
+    text += `Foram detectados possíveis pontos extremos (${outlierLabels.slice(0, 4).join(', ')}${outlierLabels.length > 4 ? ', ...' : ''}), lembrando que Pearson tende a ser mais sensível a outliers. `;
   }
   if (gap > 0.15) {
-    text += `Como Spearman (${utils.fmtSigned(spearman.coef, 3)}) se afastou de Pearson, a associacao pode ser monotona sem seguir bem uma reta linear.`;
+    text += `Como Spearman (${utils.fmtSigned(spearman.coef, 3)}) se afastou de Pearson, a associação pode ser monótona sem seguir bem uma reta linear.`;
   } else {
-    text += `Spearman (${utils.fmtSigned(spearman.coef, 3)}) permaneceu proximo, o que sugere consistencia entre leitura linear e monotona.`;
+    text += `Spearman (${utils.fmtSigned(spearman.coef, 3)}) permaneceu próximo, o que sugere consistência entre leitura linear e monótona.`;
   }
   return text;
 }
@@ -419,10 +419,10 @@ function buildCorrelationDatasetFromTabularState(fileState, stats, sourceMeta = 
       labels.push(rowLabel);
       validRows.push({ index: row.index, label: rowLabel, xValue, yValue });
     } else {
-      if (xRaw && xValue === null) notes.push('variavel_x nao contem valor numerico valido.');
-      if (yRaw && yValue === null) notes.push('variavel_y nao contem valor numerico valido.');
-      if (!xRaw && !yRaw) notes.push('Linha vazia nas colunas numericas.');
-      if (!notes.length) notes.push('Linha sem dois valores numericos utilizaveis.');
+      if (xRaw && xValue === null) notes.push('variavel_x não contém valor numérico válido.');
+      if (yRaw && yValue === null) notes.push('variavel_y não contém valor numérico válido.');
+      if (!xRaw && !yRaw) notes.push('Linha vazia nas colunas numéricas.');
+      if (!notes.length) notes.push('Linha sem dois valores numéricos utilizáveis.');
       ignoredByTextOrEmpty = true;
     }
 
@@ -449,17 +449,17 @@ function buildCorrelationDatasetFromTabularState(fileState, stats, sourceMeta = 
     .forEach(row => warnings.push(describeIgnoredRowReason(row.index, row.notes)));
   const remainingIgnored = datasetRows.filter(row => row.statusTone === 'ignored').length - 3;
   if (remainingIgnored > 0) {
-    warnings.push(`Outras ${remainingIgnored} linhas tambem foram ignoradas por falta de valores numericos validos em X e Y.`);
+    warnings.push(`Outras ${remainingIgnored} linhas também foram ignoradas por falta de valores numéricos válidos em X e Y.`);
   }
 
   const infos = [];
-  if (fileState.delimiter === ';') infos.push(`${sourceKind === 'file' ? 'Arquivo' : 'Conteudo colado'} lido no padrao ponto e virgula (;).`);
-  else if (fileState.delimiter === '\t') infos.push('Conteudo tabulado do Excel interpretado automaticamente.');
-  if (fileState.decimalCommaDetected) infos.push('Numeros com virgula decimal foram convertidos automaticamente.');
+  if (fileState.delimiter === ';') infos.push(`${sourceKind === 'file' ? 'Arquivo' : 'Conteúdo colado'} lido no padrão ponto e vírgula (;).`);
+  else if (fileState.delimiter === '\t') infos.push('Conteúdo tabulado do Excel interpretado automaticamente.');
+  if (fileState.decimalCommaDetected) infos.push('Números com vírgula decimal foram convertidos automaticamente.');
   if (fileState.usedPositionalFallback) infos.push(...fileState.recognitionDetails);
-  infos.push('ID e apenas rotulo; variavel_x e variavel_y entram no calculo.');
-  if (!recognizedColumns.id) infos.push('Coluna de ID nao reconhecida; a previa usa a ordem das linhas como referencia.');
-  if (fileState.duplicates.length) warnings.push(`Cabecalhos duplicados foram ignorados: ${fileState.duplicates.join(', ')}.`);
+  infos.push('ID é apenas rótulo; variavel_x e variavel_y entram no cálculo.');
+  if (!recognizedColumns.id) infos.push('Coluna de ID não reconhecida; a prévia usa a ordem das linhas como referência.');
+  if (fileState.duplicates.length) warnings.push(`Cabeçalhos duplicados foram ignorados: ${fileState.duplicates.join(', ')}.`);
 
   return {
     sourceKind,
@@ -572,7 +572,7 @@ function buildCorrelationFormatPreview(utils) {
           </tbody>
         </table>
       </div>
-      <div class="small-note" style="margin-top:12px;">Cada linha e uma observacao. ID e apenas rotulo; variavel_x e variavel_y entram no calculo.</div>
+      <div class="small-note" style="margin-top:12px;">Cada linha é uma observação. ID é apenas rótulo; variavel_x e variavel_y entram no cálculo.</div>
     </div>
   `;
 }
@@ -601,7 +601,7 @@ function buildInfluenceTable(dataset, pearson, outlierFlags, utils) {
             <th>X</th>
             <th>Y</th>
             <th>Y ajustado</th>
-            <th>Residuo</th>
+            <th>Resíduo</th>
             <th>Leitura</th>
           </tr>
         </thead>
@@ -613,7 +613,7 @@ function buildInfluenceTable(dataset, pearson, outlierFlags, utils) {
               <td>${utils.fmtNumber(row.y, 2)}</td>
               <td>${utils.fmtNumber(row.fitted, 2)}</td>
               <td>${utils.fmtSigned(row.residual, 2)}</td>
-              <td>${row.outlier ? 'Possivel outlier ou ponto influente' : 'Dentro do padrao geral da reta'}</td>
+              <td>${row.outlier ? 'Possível outlier ou ponto influente' : 'Dentro do padrão geral da reta'}</td>
             </tr>
           `).join('')}
         </tbody>
@@ -763,14 +763,14 @@ function buildPearsonDiagnostics(dataset, pearson, spearman, outlierFlags) {
   const curvatureGain = quadratic ? quadratic.r2 - pearson.r2 : 0;
   const gap = Math.abs(Math.abs(spearman.coef) - Math.abs(pearson.coef));
   let adequacyTone = 'good';
-  let adequacyLabel = 'Reta linear resume bem a nuvem de pontos';
+  let adequacyLabel = 'A reta linear resume bem a nuvem de pontos';
 
   if (curvatureGain > 0.12 || gap > 0.2) {
     adequacyTone = 'warning';
-    adequacyLabel = 'Sinal importante de curvatura ou inadequacao linear';
+    adequacyLabel = 'Sinal importante de curvatura ou inadequação linear';
   } else if (curvatureGain > 0.06 || normalizedRmse > 0.18 || gap > 0.12 || highlighted.some(point => point.outlier)) {
     adequacyTone = 'caution';
-    adequacyLabel = 'Reta util, mas com ressalvas de linearidade';
+    adequacyLabel = 'Reta útil, mas com ressalvas de linearidade';
   }
 
   const influenceCount = highlighted.filter(point => point.outlier || point.absResidual > (mae * 1.75)).length;
@@ -1111,24 +1111,24 @@ function buildPearsonInterpretationHtml(dataset, pearson, spearman, diagnostics,
   const strength = classifyStrength(pearson.coef);
   const alphaValue = parseFloat(alpha) || 0.05;
   const mainFinding = pearson.p < alphaValue
-    ? `Pearson indicou associacao linear ${direction} de intensidade ${strength} entre ${dataset.headers[0]} e ${dataset.headers[1]} (r = ${utils.fmtSigned(pearson.coef, 3)}; p ${formatPValue(pearson.p, utils)}).`
-    : `Pearson nao encontrou evidencia estatistica robusta de associacao linear entre ${dataset.headers[0]} e ${dataset.headers[1]} (r = ${utils.fmtSigned(pearson.coef, 3)}; p ${formatPValue(pearson.p, utils)}).`;
+    ? `Pearson indicou associação linear ${direction} de intensidade ${strength} entre ${dataset.headers[0]} e ${dataset.headers[1]} (r = ${utils.fmtSigned(pearson.coef, 3)}; p ${formatPValue(pearson.p, utils)}).`
+    : `Pearson não encontrou evidência estatística robusta de associação linear entre ${dataset.headers[0]} e ${dataset.headers[1]} (r = ${utils.fmtSigned(pearson.coef, 3)}; p ${formatPValue(pearson.p, utils)}).`;
   const adequacyText = diagnostics.adequacyTone === 'warning'
-    ? `A reta linear parece resumir os pontos com limitacoes importantes; o ganho de um ajuste curvo foi de ${utils.fmtNumber(diagnostics.curvatureGain, 3)} em R2.`
+    ? `A reta linear parece resumir os pontos com limitações importantes; o ganho de um ajuste curvo foi de ${utils.fmtNumber(diagnostics.curvatureGain, 3)} em R2.`
     : diagnostics.adequacyTone === 'caution'
-      ? `A reta linear ainda ajuda na leitura, mas ha sinais de ressalva: desvio medio de ${utils.fmtNumber(diagnostics.mae, 2)} e possivel curvatura leve a moderada.`
-      : `A reta linear resume os pontos de forma satisfatoria para uma leitura inicial, com desvio medio de ${utils.fmtNumber(diagnostics.mae, 2)}.`;
+      ? `A reta linear ainda ajuda na leitura, mas há sinais de ressalva: desvio médio de ${utils.fmtNumber(diagnostics.mae, 2)} e possível curvatura leve a moderada.`
+      : `A reta linear resume os pontos de forma satisfatória para uma leitura inicial, com desvio médio de ${utils.fmtNumber(diagnostics.mae, 2)}.`;
   const influenceText = outlierLabels.length
-    ? `Os pontos ${outlierLabels.slice(0, 4).join(', ')}${outlierLabels.length > 4 ? ', ...' : ''} merecem revisao porque Pearson e mais sensivel a outliers e aos maiores residuos.`
-    : `Nao apareceram outliers fortes na triagem inicial, embora os maiores residuos continuem visiveis no painel auxiliar.`;
+    ? `Os pontos ${outlierLabels.slice(0, 4).join(', ')}${outlierLabels.length > 4 ? ', ...' : ''} merecem revisão porque Pearson é mais sensível a outliers e aos maiores resíduos.`
+    : `Não apareceram outliers fortes na triagem inicial, embora os maiores resíduos continuem visíveis no painel auxiliar.`;
 
   return `
     ${context ? `<p><strong>Pergunta do estudo.</strong> ${utils.escapeHtml(context)}</p>` : ''}
     <p><strong>Achado principal.</strong> ${utils.escapeHtml(mainFinding)}</p>
     <ul>
-      <li>Forca e direcao: ${strength}, ${direction}, com IC95% de r em ${utils.escapeHtml(formatCi(pearson.ci, utils))}.</li>
-      <li>Adequacao da reta: ${utils.escapeHtml(adequacyText)}</li>
-      <li>Comparacao didatica: ${utils.escapeHtml(compareMessage(pearson, spearman))}</li>
+      <li>Força e direção: ${strength}, ${direction}, com IC95% de r em ${utils.escapeHtml(formatCi(pearson.ci, utils))}.</li>
+      <li>Adequação da reta: ${utils.escapeHtml(adequacyText)}</li>
+      <li>Comparação didática: ${utils.escapeHtml(compareMessage(pearson, spearman))}</li>
       <li>Pontos influentes: ${utils.escapeHtml(influenceText)}</li>
     </ul>
   `;
@@ -1139,25 +1139,25 @@ function buildSpearmanInterpretationHtml(dataset, pearson, spearman, diagnostics
   const strength = classifyStrength(spearman.coef);
   const alphaValue = parseFloat(alpha) || 0.05;
   const mainFinding = spearman.p < alphaValue
-    ? `Spearman indicou associacao monotona ${direction} de intensidade ${strength} entre ${dataset.headers[0]} e ${dataset.headers[1]} (rho = ${utils.fmtSigned(spearman.coef, 3)}; p ${formatPValue(spearman.p, utils)}).`
-    : `Spearman nao encontrou evidencia estatistica robusta de associacao monotona entre ${dataset.headers[0]} e ${dataset.headers[1]} (rho = ${utils.fmtSigned(spearman.coef, 3)}; p ${formatPValue(spearman.p, utils)}).`;
+    ? `Spearman indicou associação monótona ${direction} de intensidade ${strength} entre ${dataset.headers[0]} e ${dataset.headers[1]} (rho = ${utils.fmtSigned(spearman.coef, 3)}; p ${formatPValue(spearman.p, utils)}).`
+    : `Spearman não encontrou evidência estatística robusta de associação monótona entre ${dataset.headers[0]} e ${dataset.headers[1]} (rho = ${utils.fmtSigned(spearman.coef, 3)}; p ${formatPValue(spearman.p, utils)}).`;
   const tieText = rankSummary.xTies.groups || rankSummary.yTies.groups
-    ? `Empates foram tratados com postos medios (${rankSummary.xTies.groups} grupo(s) em X e ${rankSummary.yTies.groups} em Y).`
-    : 'Nao houve empates relevantes; a ordenacao relativa ficou limpa.';
+    ? `Os empates foram resolvidos por postos médios (${rankSummary.xTies.groups} grupo(s) em X e ${rankSummary.yTies.groups} em Y).`
+    : 'Não houve empates relevantes; a ordenação relativa ficou bem definida.';
   const monotonicText = diagnostics.monotonicConsistency >= 0.8
-    ? `A ordem relativa dos dados foi bastante coerente com a tendencia monotona esperada (${utils.fmtNumber(diagnostics.monotonicConsistency * 100, 0)}% das transicoes alinhadas).`
+    ? `A ordem relativa dos dados foi bastante coerente com a tendência monótona esperada (${utils.fmtNumber(diagnostics.monotonicConsistency * 100, 0)}% das transições alinhadas).`
     : diagnostics.monotonicConsistency >= 0.6
-      ? `A ordenacao relativa mostrou monotonicidade parcial (${utils.fmtNumber(diagnostics.monotonicConsistency * 100, 0)}% das transicoes alinhadas), sem exigir uma reta perfeita.`
-      : `A ordenacao relativa foi irregular (${utils.fmtNumber(diagnostics.monotonicConsistency * 100, 0)}% das transicoes alinhadas), sugerindo cautela mesmo com a leitura por ranks.`;
+      ? `A ordenação relativa mostrou monotonicidade parcial (${utils.fmtNumber(diagnostics.monotonicConsistency * 100, 0)}% das transições alinhadas), sem exigir uma reta perfeita.`
+      : `A ordenação relativa foi irregular (${utils.fmtNumber(diagnostics.monotonicConsistency * 100, 0)}% das transições alinhadas), sugerindo cautela mesmo com a leitura por ranks.`;
 
   return `
     ${context ? `<p><strong>Pergunta do estudo.</strong> ${utils.escapeHtml(context)}</p>` : ''}
     <p><strong>Achado principal.</strong> ${utils.escapeHtml(mainFinding)}</p>
     <ul>
-      <li>Forca e direcao monotona: ${strength}, ${direction}, com IC95% de rho em ${utils.escapeHtml(formatCi(spearman.ci, utils))}.</li>
-      <li>Base do calculo: ${utils.escapeHtml(tieText)}</li>
+      <li>Força e direção monótona: ${strength}, ${direction}, com IC95% de rho em ${utils.escapeHtml(formatCi(spearman.ci, utils))}.</li>
+      <li>Base do cálculo: ${utils.escapeHtml(tieText)}</li>
       <li>Monotonicidade: ${utils.escapeHtml(monotonicText)}</li>
-      <li>Comparacao didatica: ${utils.escapeHtml(compareMessage(pearson, spearman))}</li>
+      <li>Comparação didática: ${utils.escapeHtml(compareMessage(pearson, spearman))}</li>
     </ul>
   `;
 }
@@ -1343,7 +1343,7 @@ export async function renderTestModule(ctx) {
               <input id="c-context" type="text" placeholder="Existe correlação entre as duas variáveis agregadas?" value="${utils.escapeHtml(state.context || '')}" />
             </div>
             <div>
-              <label for="c-alpha">Nível de significância (p-valor)</label>
+            <label for="c-alpha">Nível de significância (valor de p)</label>
               <select id="c-alpha">
                 <option value="0.01"${state.alpha === '0.01' ? ' selected' : ''}>1%</option>
                 <option value="0.05"${state.alpha === '0.05' ? ' selected' : ''}>5%</option>
@@ -1390,7 +1390,7 @@ export async function renderTestModule(ctx) {
         </section>
 
         <section class="surface-card">
-          <h4>Previa dos dados</h4>
+          <h4>Prévia dos dados</h4>
           <div id="c-preview-meta" class="tabular-preview-stack">
             <div class="small-note">Nenhum dado lido ainda.</div>
           </div>
@@ -1464,7 +1464,7 @@ export async function renderTestModule(ctx) {
       els.status.className = 'status-bar';
       els.status.textContent = statusMessage;
       els.metrics.innerHTML = '';
-      els.interpretation.innerHTML = '<p class="muted">A interpretacao aparecera aqui apos rodar a analise.</p>';
+      els.interpretation.innerHTML = '<p class="muted">A interpretação aparecerá aqui após rodar a análise.</p>';
       els.outlier.innerHTML = '';
       els.charts.innerHTML = '';
     }
@@ -1522,8 +1522,8 @@ export async function renderTestModule(ctx) {
       applyDataset(
         dataset,
         fileState.status === 'loaded'
-          ? `Arquivo "${file.name}" lido com sucesso. Revise a previa antes de rodar a analise.`
-          : (fileState.message || 'Nao foi possivel ler o arquivo enviado.'),
+          ? `Arquivo "${file.name}" lido com sucesso. Revise a prévia antes de rodar a análise.`
+          : (fileState.message || 'Não foi possível ler o arquivo enviado.'),
         fileState.status === 'loaded' ? 'success' : 'error'
       );
     }
@@ -1659,7 +1659,7 @@ export async function renderTestModule(ctx) {
       els.status.className = 'success-box';
 
       if (isSpearman) {
-        els.status.textContent = `Spearman rodado com ${dataset.x.length} pares validos: rho = ${utils.fmtSigned(spearman.coef, 3)} e p ${formatPValue(spearman.p, utils)}.`;
+        els.status.textContent = `Spearman rodado com ${dataset.x.length} pares válidos: rho = ${utils.fmtSigned(spearman.coef, 3)} e p ${formatPValue(spearman.p, utils)}.`;
 
         const primaryCards = [
           correlationMetricCard('Método principal', 'Spearman', 'Associação monótona baseada em ranks.', 'is-active is-primary'),
@@ -1679,24 +1679,24 @@ export async function renderTestModule(ctx) {
         els.interpretation.innerHTML = buildSpearmanInterpretationHtml(dataset, pearson, spearman, spearmanDiagnostics, rankSummary, utils, activeAlpha, activeContext);
         els.outlier.innerHTML = buildInsightStrip([
           {
-            label: 'Metodo principal',
-            text: 'Spearman mede monotonicidade pela ordenacao relativa, nao pela melhor reta.',
+            label: 'Método principal',
+            text: 'O método principal, Spearman, mede a monotonicidade pela ordenação relativa, não pela melhor reta.',
             tone: 'info'
           },
           {
-            label: 'Comparacao com Pearson',
+            label: 'Comparação com Pearson',
             text: compareMessage(pearson, spearman),
             tone: Math.abs(Math.abs(spearman.coef) - Math.abs(pearson.coef)) > 0.12 ? 'warning' : 'info'
           },
           {
             label: 'Monotonicidade',
-            text: `${utils.fmtNumber(spearmanDiagnostics.monotonicConsistency * 100, 0)}% das transicoes ficaram alinhadas com a tendencia monotona esperada.`,
+            text: `${utils.fmtNumber(spearmanDiagnostics.monotonicConsistency * 100, 0)}% das transições ficaram alinhadas com a tendência monótona esperada.`,
             tone: spearmanDiagnostics.monotonicConsistency < 0.6 ? 'warning' : 'success'
           },
           {
             label: 'Empates e ranks',
             text: rankSummary.xTies.groups || rankSummary.yTies.groups
-              ? `Empates foram resolvidos por postos medios antes do calculo do coeficiente.`
+              ? 'Os empates foram resolvidos por postos médios antes do cálculo do coeficiente.'
               : 'Sem empates relevantes; os postos ficaram bem definidos.',
             tone: 'neutral'
           }
@@ -1997,7 +1997,7 @@ export async function renderTestModule(ctx) {
             <input id="c-datasus-context" type="text" value="${utils.escapeHtml(datasusState.context)}" />
           </div>
           <div>
-            <label for="c-datasus-alpha">Nível de significância (p-valor)</label>
+            <label for="c-datasus-alpha">Nível de significância (valor de p)</label>
             <select id="c-datasus-alpha">
               <option value="0.01"${datasusState.alpha === '0.01' ? ' selected' : ''}>1%</option>
               <option value="0.05"${datasusState.alpha === '0.05' ? ' selected' : ''}>5%</option>
@@ -2145,7 +2145,7 @@ export async function renderTestModule(ctx) {
         // Delay slightly to let the browser populate the textarea
         setTimeout(() => {
           state.paste = pasteEl.value;
-          readPastedData(pasteEl.value, 'Dados colados! Clique em "Rodar análise" ou aguarde.', 'success');
+          readPastedData(pasteEl.value, 'Dados colados com sucesso. Clique em "Rodar análise" ou aguarde.', 'success');
           if (state.dataset.hasContent) runAnalysis();
         }, 30);
       });
@@ -2190,8 +2190,8 @@ export async function renderTestModule(ctx) {
     root.innerHTML = `
       <div class="module-grid correlacao-module">
         <section class="surface-card">
-          <h4>Modulo indisponivel no momento</h4>
-          <p class="small-note">Nao foi possivel montar a interface de correlacao agora. Atualize a pagina e tente novamente.</p>
+          <h4>Módulo indisponível no momento</h4>
+          <p class="small-note">Não foi possível montar a interface de correlação agora. Atualize a página e tente novamente.</p>
         </section>
       </div>
     `;

@@ -761,11 +761,11 @@ export function buildResultMetricsHtml(result, labels, utils) {
 function buildResultChartsHtmlLegacy(result, labels, g1, g2, stats, utils) {
   return `
     <article class="chart-card">
-      <h4>Grafico 1 · Distribuicao e dispersao por grupo</h4>
+      <h4>Gráfico 1 · Distribuição e dispersão por grupo</h4>
       <div class="chart-wrap">${buildDistributionSvg(g1, g2, labels[0], labels[1], stats, utils)}</div>
     </article>
     <article class="chart-card">
-      <h4>Grafico 2 · Comparacao de medias e IC95%</h4>
+      <h4>Gráfico 2 · Comparação de médias e IC95%</h4>
       <div class="chart-wrap">${buildMeanCiSvg(result, labels, utils)}</div>
       <div class="small-note" style="margin-top:10px;">A barra central indica o IC95% da diferença (${utils.escapeHtml(labels[0])} - ${utils.escapeHtml(labels[1])}).</div>
     </article>
