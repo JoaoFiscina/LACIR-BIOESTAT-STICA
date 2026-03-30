@@ -16,7 +16,7 @@ import {
   Legend,
   Tooltip,
   Filler
-} from 'chart.js';
+} from 'https://cdn.jsdelivr.net/npm/chart.js@4.4.2/+esm';
 
 Chart.register(
   ScatterController,
