@@ -1074,8 +1074,8 @@ export async function renderTestModule(ctx) {
     }
 
     const model = stats.praisWinsten(dataset.time, dataset.values);
-    const fitted = dataset.time.map(timeValue => Math.pow(10, model.alpha + (model.beta * timeValue)));
-    const residuals = dataset.values.map((value, index) => Math.log10(value) - (model.alpha + (model.beta * dataset.time[index])));
+    const fitted = model.fitted;
+    const residuals = model.residuals;
     const pointLabels = dataset.orderedRows.map(row => row.timeLabel);
     const residualRows = buildResidualSummaryRows(dataset.orderedRows, fitted, residuals);
     const largestResidual = [...residualRows].sort((left, right) => Math.abs(right.residual) - Math.abs(left.residual))[0] || null;
