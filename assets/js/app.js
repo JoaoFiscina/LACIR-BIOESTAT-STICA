@@ -546,7 +546,28 @@ const Stats = {
     const seBeta = Math.sqrt(s2 * inv11);
     return { alpha, beta, resid, df, seBeta };
   },
-  estimateRho(resid) {
+  transformPraisWinsten(x, y, rho) {
+    const droppedFirst = Math.abs(rho) >= 1;
+    const cT = [];
+    const xT = [];
+    const yT = [];
+
+    if (!droppedFirst) {
+      const firstWeight = Math.sqrt(Math.max(0, 1 - (rho * rho)));
+      cT.push(firstWeight);
+      xT.push(firstWeight * x[0]);
+      yT.push(firstWeight * y[0]);
+    }
+
+    for (let index = 1; index < y.length; index += 1) {
+      cT.push(1 - rho);
+      xT.push(x[index] - (rho * x[index - 1]));
+      yT.push(y[index] - (rho * y[index - 1]));
+    }
+
+    return { cT, xT, yT, droppedFirst };
+  },
+  estimateRhoDetails(resid) {
     let num = 0;
     let den = 0;
 
@@ -555,53 +576,100 @@ const Stats = {
       den += resid[index - 1] * resid[index - 1];
     }
 
-    if (den === 0) return 0;
-    return Math.max(-0.99, Math.min(0.99, num / den));
+    if (Math.abs(den) < 1e-15) {
+      return { rho: 0, rawRho: 0, clipped: false };
+    }
+
+    const rawRho = num / den;
+    if (!Number.isFinite(rawRho)) {
+      return { rho: 0, rawRho: 0, clipped: false };
+    }
+
+    if (Math.abs(rawRho) > 1) {
+      return {
+        rho: rawRho < 0 ? -1 : 1,
+        rawRho,
+        clipped: true
+      };
+    }
+
+    return { rho: rawRho, rawRho, clipped: false };
+  },
+  estimateRho(resid) {
+    return this.estimateRhoDetails(resid).rho;
   },
   praisWinsten(years, values) {
     const n = years.length;
     const y = values.map(value => Math.log10(value));
     const x = years.slice();
-    const c = new Array(n).fill(1);
-    let fit = this.olsTransformed(c, x, y);
-    let rho = this.estimateRho(fit.resid);
-    let prev = null;
+    let fit = this.olsTransformed(new Array(n).fill(1), x, y);
+    let residuals = fit.resid.slice();
+    let rho = 0;
+    let rhoRaw = 0;
+    let rhoClipped = false;
+    let droppedFirst = false;
+    let converged = false;
+    let iterations = 0;
 
     for (let iter = 0; iter < 100; iter += 1) {
-      const cT = [Math.sqrt(1 - (rho * rho))];
-      const xT = [cT[0] * x[0]];
-      const yT = [cT[0] * y[0]];
+      const previousRho = rho;
+      const rhoInfo = this.estimateRhoDetails(residuals);
+      rho = rhoInfo.rho;
+      rhoRaw = rhoInfo.rawRho;
+      rhoClipped = rhoClipped || rhoInfo.clipped;
 
-      for (let index = 1; index < n; index += 1) {
-        cT.push(1 - rho);
-        xT.push(x[index] - (rho * x[index - 1]));
-        yT.push(y[index] - (rho * y[index - 1]));
-      }
+      const transformed = this.transformPraisWinsten(x, y, rho);
+      droppedFirst = droppedFirst || transformed.droppedFirst;
+      fit = this.olsTransformed(transformed.cT, transformed.xT, transformed.yT);
+      residuals = y.map((value, index) => value - (fit.alpha + (fit.beta * x[index])));
+      iterations = iter + 1;
 
-      fit = this.olsTransformed(cT, xT, yT);
-      const residOriginal = years.map((year, index) => y[index] - (fit.alpha + (fit.beta * year)));
-      const newRho = this.estimateRho(residOriginal);
-      if (prev !== null && Math.abs(newRho - prev) < 1e-8) {
-        rho = newRho;
+      if (Math.abs(rho - previousRho) < 1e-8) {
+        converged = true;
         break;
       }
-      prev = rho;
-      rho = newRho;
     }
 
     const beta = fit.beta;
-    const df = n - 2;
-    const t = beta / fit.seBeta;
-    const p = 2 * (1 - this.tcdf(Math.abs(t), df));
-    const tcrit = this.tInv(0.975, df);
-    const ciBeta = [beta - (tcrit * fit.seBeta), beta + (tcrit * fit.seBeta)];
+    const df = fit.df;
+    const t = fit.seBeta === 0 ? 0 : beta / fit.seBeta;
+    const p = Number.isFinite(t) && Number.isFinite(df) && df > 0
+      ? 2 * (1 - this.tcdf(Math.abs(t), df))
+      : NaN;
+    const tcrit = Number.isFinite(df) && df > 0 ? this.tInv(0.975, df) : NaN;
+    const ciBeta = Number.isFinite(tcrit)
+      ? [beta - (tcrit * fit.seBeta), beta + (tcrit * fit.seBeta)]
+      : [NaN, NaN];
     const apc = (Math.pow(10, beta) - 1) * 100;
     const ciApc = [(Math.pow(10, ciBeta[0]) - 1) * 100, (Math.pow(10, ciBeta[1]) - 1) * 100];
+    const fittedLog = x.map(timeValue => fit.alpha + (fit.beta * timeValue));
+    const fitted = fittedLog.map(value => Math.pow(10, value));
     let classification = 'estacionária';
     if (ciApc[0] > 0) classification = 'crescente';
     else if (ciApc[1] < 0) classification = 'decrescente';
 
-    return { n, rho, alpha: fit.alpha, beta, seBeta: fit.seBeta, p, df, t, ciBeta, apc, ciApc, classification };
+    return {
+      n,
+      rho,
+      rhoRaw,
+      rhoClipped,
+      droppedFirst,
+      converged,
+      iterations,
+      alpha: fit.alpha,
+      beta,
+      seBeta: fit.seBeta,
+      p,
+      df,
+      t,
+      ciBeta,
+      apc,
+      ciApc,
+      classification,
+      residuals,
+      fittedLog,
+      fitted
+    };
   }
 };
 
