@@ -639,6 +639,17 @@ function buildDistributionSvg(g1, g2, label1, label2, stats, utils) {
   const yMax = max + pad;
   const displayLabel1 = truncateDisplayLabel(label1, 22);
   const displayLabel2 = truncateDisplayLabel(label2, 22);
+  const theme = {
+    background: 'var(--chart-canvas-bg, #0f1117)',
+    grid: 'var(--chart-grid, rgba(255,255,255,0.07))',
+    axis: 'var(--chart-axis-border, rgba(255,255,255,0.10))',
+    tick: 'var(--chart-tick, rgba(255,255,255,0.45))',
+    label: 'var(--chart-label, rgba(255,255,255,0.65))',
+    blue: 'var(--chart-blue, #3b82f6)',
+    blueSoft: 'var(--chart-blue-soft, rgba(59,130,246,0.15))',
+    primary: 'var(--chart-primary, #22c55e)',
+    primarySoft: 'var(--chart-primary-soft, rgba(34,197,94,0.18))'
+  };
 
   const y = value => height - margin.bottom - ((value - yMin) / (yMax - yMin || 1)) * (height - margin.top - margin.bottom);
   const xCenters = [240, 520];
@@ -647,29 +658,49 @@ function buildDistributionSvg(g1, g2, label1, label2, stats, utils) {
 
   const grid = ticks.map(tick => {
     const py = y(tick);
-    return `<g><line x1="${margin.left}" y1="${py.toFixed(2)}" x2="${width - margin.right}" y2="${py.toFixed(2)}" stroke="#dbe5f2" stroke-dasharray="4 6"/><text x="${margin.left - 12}" y="${(py + 4).toFixed(2)}" fill="#5b6b84" text-anchor="end" font-size="12">${utils.fmtNumber(tick, 1)}</text></g>`;
+    return `
+      <g>
+        <line x1="${margin.left}" y1="${py.toFixed(2)}" x2="${width - margin.right}" y2="${py.toFixed(2)}" style="stroke:${theme.grid};stroke-dasharray:4 6;" />
+        <text x="${margin.left - 12}" y="${(py + 4).toFixed(2)}" text-anchor="end" font-size="12" style="fill:${theme.tick};">${utils.fmtNumber(tick, 1)}</text>
+      </g>
+    `;
   }).join('');
 
-  function drawGroup(values, centerX, color, label) {
+  function drawGroup(values, centerX, color, fillColor, label) {
+    if (!values.length) return '';
     const sum = summarize(values, stats);
-    const points = values.map((value, index) => `<circle cx="${(centerX + jitter(index)).toFixed(2)}" cy="${y(value).toFixed(2)}" r="5.4" fill="${color}" fill-opacity="0.9" stroke="#fff" stroke-width="1.8"><title>${utils.escapeHtml(label)}: ${utils.fmtNumber(value, 2)}</title></circle>`).join('');
+    const points = values.map((value, index) => `
+      <circle
+        cx="${(centerX + jitter(index)).toFixed(2)}"
+        cy="${y(value).toFixed(2)}"
+        r="5.4"
+        style="fill:${color};stroke:${theme.background};"
+        fill-opacity="0.92"
+        stroke-width="1.8"
+      >
+        <title>${utils.escapeHtml(label)}: ${utils.fmtNumber(value, 2)}</title>
+      </circle>
+    `).join('');
     return `
-      <line x1="${centerX}" y1="${y(sum.max).toFixed(2)}" x2="${centerX}" y2="${y(sum.min).toFixed(2)}" stroke="${color}" stroke-width="2.6" opacity="0.7"/>
-      <rect x="${centerX - 28}" y="${y(sum.q3).toFixed(2)}" width="56" height="${Math.max(10, y(sum.q1) - y(sum.q3)).toFixed(2)}" rx="10" fill="${color}" fill-opacity="0.12" stroke="${color}" stroke-width="2"/>
-      <line x1="${centerX - 32}" y1="${y(sum.mean).toFixed(2)}" x2="${centerX + 32}" y2="${y(sum.mean).toFixed(2)}" stroke="${color}" stroke-width="3"/>
+      <line x1="${centerX}" y1="${y(sum.max).toFixed(2)}" x2="${centerX}" y2="${y(sum.min).toFixed(2)}" style="stroke:${color};" stroke-width="2.6" opacity="0.78"/>
+      <line x1="${centerX - 14}" y1="${y(sum.max).toFixed(2)}" x2="${centerX + 14}" y2="${y(sum.max).toFixed(2)}" style="stroke:${color};" stroke-width="2.4" opacity="0.78"/>
+      <line x1="${centerX - 14}" y1="${y(sum.min).toFixed(2)}" x2="${centerX + 14}" y2="${y(sum.min).toFixed(2)}" style="stroke:${color};" stroke-width="2.4" opacity="0.78"/>
+      <rect x="${centerX - 28}" y="${y(sum.q3).toFixed(2)}" width="56" height="${Math.max(10, y(sum.q1) - y(sum.q3)).toFixed(2)}" rx="10" style="fill:${fillColor};stroke:${color};" stroke-width="2"/>
+      <line x1="${centerX - 32}" y1="${y(sum.mean).toFixed(2)}" x2="${centerX + 32}" y2="${y(sum.mean).toFixed(2)}" style="stroke:${color};" stroke-width="3"/>
       ${points}
     `;
   }
 
   return `
     <svg class="groupplot-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Distribuição dos grupos">
-      <rect x="0" y="0" width="${width}" height="${height}" rx="20" fill="#fff"/>
+      <rect x="0" y="0" width="${width}" height="${height}" rx="20" style="fill:${theme.background};"/>
       ${grid}
-      <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#8da1bc"/>
-      ${drawGroup(g1, xCenters[0], '#2563eb', label1)}
-      ${drawGroup(g2, xCenters[1], '#0f766e', label2)}
-      <text x="${xCenters[0]}" y="${height - 22}" text-anchor="middle" fill="#334155" font-size="13" font-weight="700">${utils.escapeHtml(displayLabel1)}</text>
-      <text x="${xCenters[1]}" y="${height - 22}" text-anchor="middle" fill="#334155" font-size="13" font-weight="700">${utils.escapeHtml(displayLabel2)}</text>
+      <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" style="stroke:${theme.axis};"/>
+      ${drawGroup(g1, xCenters[0], theme.blue, theme.blueSoft, label1)}
+      ${drawGroup(g2, xCenters[1], theme.primary, theme.primarySoft, label2)}
+      <text x="${margin.left}" y="${margin.top - 4}" font-size="12" font-weight="600" style="fill:${theme.tick};">Valor observado</text>
+      <text x="${xCenters[0]}" y="${height - 22}" text-anchor="middle" font-size="13" font-weight="700" style="fill:${theme.label};">${utils.escapeHtml(displayLabel1)}</text>
+      <text x="${xCenters[1]}" y="${height - 22}" text-anchor="middle" font-size="13" font-weight="700" style="fill:${theme.label};">${utils.escapeHtml(displayLabel2)}</text>
     </svg>
   `;
 }
@@ -772,6 +803,29 @@ function buildResultChartsHtmlLegacy(result, labels, g1, g2, stats, utils) {
   `;
 }
 
+function buildObservedDistributionCard(g1, g2, labels, stats, utils) {
+  const leftLabel = truncateDisplayLabel(labels[0] || 'Grupo 1', 26);
+  const rightLabel = truncateDisplayLabel(labels[1] || 'Grupo 2', 26);
+
+  return `
+    <article class="chart-card chart-card--full tstudent-observed-distribution-card">
+      <div class="chart-card-header">
+        <div>
+          <h4 style="margin:0 0 4px;">Distribui\u00e7\u00e3o e dispers\u00e3o por grupo: observa\u00e7\u00f5es individuais</h4>
+          <p style="margin:0;opacity:.65;font-size:.85rem;">Cada ponto representa uma observa\u00e7\u00e3o. O painel resume a dispers\u00e3o e a posi\u00e7\u00e3o central dos grupos.</p>
+        </div>
+      </div>
+      <div class="chart-wrap" style="margin-top:12px;">${buildDistributionSvg(g1, g2, labels[0], labels[1], stats, utils)}</div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--chart-blue, #3b82f6);"></span>${utils.escapeHtml(leftLabel)}</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--chart-primary, #22c55e);"></span>${utils.escapeHtml(rightLabel)}</span>
+        <span class="legend-item"><span class="legend-line" style="background:var(--chart-label, rgba(255,255,255,0.65));"></span>Linha central = m\u00e9dia</span>
+      </div>
+      <div class="small-note" style="margin-top:10px;">A caixa indica a faixa interquartil, a haste mostra a amplitude observada e cada ponto corresponde a uma observa\u00e7\u00e3o individual.</div>
+    </article>
+  `;
+}
+
 function buildManualInterpretationLegacy(result, alpha, labels, question, utils) {
   const effectClass = classifyEffect(result.d);
   const higherGroup = result.diff >= 0 ? labels[0] : labels[1];
@@ -826,7 +880,8 @@ function cleanCategoryLabelLegacy(value) {
 export function buildResultChartsHtml(result, labels, g1, g2, stats, utils) {
   return [
     buildChartContainer('t-chart-dist', 'Distribuição e dispersão por grupo', 'Resumo visual das médias, desvios e quartis. Passe o mouse para detalhes estatísticos.', 'tstudent-distribuicao.png'),
-    buildChartContainer('t-chart-diff', 'Diferença entre médias e IC95%', 'Veja se a diferença estimada se afasta de zero e qual a faixa plausível do efeito.', 'tstudent-diferenca.png')
+    buildChartContainer('t-chart-diff', 'Diferença entre médias e IC95%', 'Veja se a diferença estimada se afasta de zero e qual a faixa plausível do efeito.', 'tstudent-diferenca.png'),
+    buildObservedDistributionCard(g1, g2, labels, stats, utils)
   ].join('');
 }
 

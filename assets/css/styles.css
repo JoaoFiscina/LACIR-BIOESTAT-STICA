@@ -1117,6 +1117,7 @@ input[type="file"] {
 /* ─── CHART CARDS ────────────────────────────────────── */
 .chart-grid { grid-template-columns: minmax(0,1.25fr) minmax(0,.75fr); }
 .chart-card { overflow: hidden; min-width: 0; }
+.chart-card--full { grid-column: 1 / -1; }
 .chart-wrap {
   width: 100%; max-width: 100%; min-width: 0;
   overflow-x: auto; overflow-y: hidden;
