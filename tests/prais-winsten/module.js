@@ -1085,6 +1085,14 @@ export async function renderTestModule(ctx) {
       : Math.abs(model.rho) < 0.6
         ? 'autocorrelação moderada'
         : 'autocorrelação forte';
+    const rhoDiagnostics = [];
+    if (model.rhoClipped) {
+      rhoDiagnostics.push('estimativa no limite matematicamente vÃ¡lido do AR(1)');
+    }
+    if (!model.converged) {
+      rhoDiagnostics.push('convergÃªncia incompleta da iteraÃ§Ã£o');
+    }
+    const rhoNote = rhoDiagnostics.length ? `${acText} Â· ${rhoDiagnostics.join(' Â· ')}` : acText;
 
     state.hasResult = true;
     els.status.className = 'success-box';
