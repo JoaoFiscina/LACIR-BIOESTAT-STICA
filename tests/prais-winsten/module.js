@@ -1087,12 +1087,12 @@ export async function renderTestModule(ctx) {
         : 'autocorrelação forte';
     const rhoDiagnostics = [];
     if (model.rhoClipped) {
-      rhoDiagnostics.push('estimativa no limite matematicamente vÃ¡lido do AR(1)');
+      rhoDiagnostics.push('estimativa no limite matematicamente válido do AR(1)');
     }
     if (!model.converged) {
-      rhoDiagnostics.push('convergÃªncia incompleta da iteraÃ§Ã£o');
+      rhoDiagnostics.push('convergência incompleta da iteração');
     }
-    const rhoNote = rhoDiagnostics.length ? `${acText} Â· ${rhoDiagnostics.join(' Â· ')}` : acText;
+    const rhoNote = rhoDiagnostics.length ? `${acText} · ${rhoDiagnostics.join(' · ')}` : acText;
 
     state.hasResult = true;
     els.status.className = 'success-box';
@@ -1105,7 +1105,7 @@ export async function renderTestModule(ctx) {
       metricCard('p-valor', utils.fmtP(model.p), `t = ${utils.fmtNumber(model.t, 3)} · gl = ${model.df}`),
       metricCard('Classificação', utils.escapeHtml(model.classification), `Mudança ${trendStrength(model.apc)}.`),
       metricCard('Variação percentual (APC)', `${utils.fmtSigned(model.apc, 2)}%`, `IC95% ${utils.fmtNumber(model.ciApc[0], 2)} a ${utils.fmtNumber(model.ciApc[1], 2)}`),
-      metricCard('Autocorrelação (ρ)', utils.fmtSigned(model.rho, 3), acText)
+      metricCard('Autocorrelação (ρ)', utils.fmtSigned(model.rho, 3), rhoNote)
     ].join('');
 
     els.charts.innerHTML = [
