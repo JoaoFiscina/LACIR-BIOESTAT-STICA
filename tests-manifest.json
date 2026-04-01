@@ -1,5 +1,11 @@
 [
   {
+    "id": "guia-datasus",
+    "title": "Guia DATASUS",
+    "subtitle": "Fluxo did\u00e1tico para sair da pergunta de pesquisa e chegar a uma tabela utiliz\u00e1vel.",
+    "path": "./tests/guia-datasus/"
+  },
+  {
     "id": "t-student",
     "title": "t de Student",
     "subtitle": "Comparação simples para avaliar se há evidência de diferença entre dois grupos.",

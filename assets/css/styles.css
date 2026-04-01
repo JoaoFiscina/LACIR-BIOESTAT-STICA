@@ -1319,6 +1319,423 @@ input[type="file"] {
 .datasus-step-note, .datasus-preview-note { color: var(--muted); line-height: 1.55; }
 .datasus-mapping-table select { min-width: 160px; }
 
+/* --- DATASUS GUIDE ------------------------------------------------------ */
+.datasus-guide-module {
+  display: grid;
+  gap: 22px;
+}
+.datasus-guide-hero {
+  position: relative;
+  padding: 28px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at top right, var(--chart-blue-soft), transparent 28%),
+    var(--hero-gradient);
+  overflow: hidden;
+}
+.datasus-guide-hero::after {
+  content: '';
+  position: absolute;
+  inset: auto -70px -90px auto;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34,197,94,0.18), transparent 70%);
+  pointer-events: none;
+}
+.datasus-guide-hero-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 14px;
+  max-width: 860px;
+}
+.datasus-guide-hero-copy h3 {
+  margin: 0;
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+}
+.datasus-guide-hero-copy p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.datasus-guide-flow-copy {
+  color: var(--text) !important;
+  font-weight: 600;
+}
+.datasus-guide-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.datasus-guide-progress {
+  position: sticky;
+  top: 12px;
+  z-index: 8;
+  display: grid;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(18px);
+}
+.datasus-guide-progress-head p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.datasus-guide-progress-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+.datasus-guide-progress-step {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--panel-soft-bg);
+}
+.datasus-guide-progress-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: var(--button-on-accent);
+  background: linear-gradient(160deg, var(--green) 0%, var(--green-dim) 100%);
+  box-shadow: 0 10px 24px rgba(34, 197, 94, 0.25);
+}
+.datasus-guide-progress-step strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.datasus-guide-progress-step span:last-child {
+  color: var(--muted);
+  font-size: .92rem;
+  line-height: 1.45;
+}
+.datasus-guide-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 20px;
+  align-items: start;
+}
+.datasus-guide-main {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+.datasus-guide-section {
+  display: grid;
+  gap: 18px;
+  scroll-margin-top: 110px;
+}
+.datasus-guide-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.datasus-guide-section-head h4 {
+  margin: 8px 0 0;
+}
+.datasus-guide-lead {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.72;
+  max-width: 960px;
+}
+.datasus-guide-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.datasus-guide-subcard {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+}
+.datasus-guide-question-list {
+  display: grid;
+  gap: 10px;
+}
+.datasus-guide-question-item {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--panel-soft-bg);
+}
+.datasus-guide-question-item > strong {
+  color: var(--green-light);
+  font-size: 1.05rem;
+}
+.datasus-guide-question-item p,
+.datasus-guide-warning-card p,
+.datasus-guide-base-card p,
+.datasus-guide-filter-item p,
+.datasus-guide-question-card p,
+.datasus-guide-quick-item p,
+.datasus-guide-compare-card p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.62;
+}
+.datasus-guide-warning-card {
+  border-color: var(--wizard-highlight-border);
+  background: linear-gradient(160deg, var(--wizard-highlight-bg) 0%, var(--tip-gradient) 100%);
+}
+.datasus-guide-base-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 14px;
+}
+.datasus-guide-base-card {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--panel-strong-bg);
+}
+.datasus-guide-base-body {
+  display: grid;
+  gap: 12px;
+}
+.datasus-guide-micro-item {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--panel-soft-bg);
+}
+.datasus-guide-micro-item strong,
+.datasus-guide-filter-item strong,
+.datasus-guide-question-card strong,
+.datasus-guide-quick-item strong {
+  color: var(--text);
+}
+.datasus-guide-tabnet-block {
+  display: grid;
+  gap: 14px;
+}
+.datasus-guide-tabnet-head h4 {
+  margin: 0;
+}
+.datasus-guide-tabnet-head p {
+  margin: 8px 0 0;
+}
+.datasus-guide-tab-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr);
+  gap: 16px;
+  align-items: start;
+}
+.datasus-guide-tab-main {
+  display: grid;
+  gap: 16px;
+}
+.datasus-guide-pill-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+}
+.datasus-guide-explainer p {
+  margin: 8px 0 0;
+}
+.datasus-guide-rule-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.datasus-guide-rule-card {
+  padding: 16px 18px;
+  border: 1px solid var(--secondary-btn-border);
+  border-radius: var(--radius-lg);
+  background: var(--secondary-btn-bg);
+}
+.datasus-guide-rule-card strong {
+  color: var(--green-light);
+}
+.datasus-guide-rule-card p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.datasus-guide-simulator {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  background: var(--panel-deep-bg);
+}
+.datasus-guide-simulator-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.datasus-guide-simulator-head h4 {
+  margin: 8px 0 0;
+}
+.datasus-guide-simulator-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.datasus-guide-example-note {
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--panel-soft-bg);
+  color: var(--text);
+  font-weight: 600;
+}
+.datasus-guide-quick-panel,
+.datasus-guide-sidebar {
+  display: grid;
+  gap: 14px;
+}
+.datasus-guide-quick-panel {
+  position: sticky;
+  top: 116px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--panel-soft-bg);
+}
+.datasus-guide-quick-panel h4 {
+  margin: 8px 0 0;
+}
+.datasus-guide-quick-list,
+.datasus-guide-quick-summary {
+  display: grid;
+  gap: 10px;
+}
+.datasus-guide-quick-item,
+.datasus-guide-question-card,
+.datasus-guide-filter-item,
+.datasus-guide-sidecard {
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+}
+.datasus-guide-filter-grid,
+.datasus-guide-action-grid,
+.datasus-guide-compare,
+.datasus-guide-question-grid {
+  display: grid;
+  gap: 14px;
+}
+.datasus-guide-filter-grid,
+.datasus-guide-compare {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.datasus-guide-action-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.datasus-guide-filter-card {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+}
+.datasus-guide-filter-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.datasus-guide-refine-note strong {
+  color: var(--text);
+}
+.datasus-guide-action-card {
+  position: relative;
+  padding-top: 48px;
+}
+.datasus-guide-action-number {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: var(--green-light);
+}
+.datasus-guide-question-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 14px;
+}
+.datasus-guide-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.datasus-guide-checklist li {
+  position: relative;
+  padding: 14px 16px 14px 46px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--panel-soft-bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+.datasus-guide-checklist li::before {
+  content: '\2713';
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  color: var(--green-light);
+  font-weight: 900;
+}
+.datasus-guide-compare-card {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+}
+.datasus-guide-sidebar {
+  position: sticky;
+  top: 116px;
+}
+.datasus-guide-sidecard h4 {
+  margin: 8px 0 0;
+}
+.datasus-guide-nav-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+.datasus-guide-nav-link {
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--panel-soft-bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: .18s ease;
+}
+.datasus-guide-nav-link:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--nav-hover-bg);
+}
+
 /* ─── ACTIONS ROW SELECT ─────────────────────────────── */
 .actions-row select {
   min-width: min(220px,100%);
@@ -1455,6 +1872,8 @@ input[type="file"] {
     grid-template-columns: 1fr;
   }
   .hero-note { justify-self: stretch; max-width: none; }
+  .datasus-guide-shell { grid-template-columns: 1fr; }
+  .datasus-guide-sidebar { position: static; }
 }
 @media (max-width: 980px) {
   .lacir-header-inner { height: auto; min-height: 62px; padding-top: 12px; padding-bottom: 12px; align-items: flex-start; }
@@ -1462,6 +1881,18 @@ input[type="file"] {
   .theme-switcher { width: 100%; justify-content: space-between; }
   .page-shell { grid-template-columns: 1fr; }
   .form-grid.two, .form-grid.three { grid-template-columns: 1fr; }
+  .datasus-guide-progress { position: static; }
+  .datasus-guide-progress-list,
+  .datasus-guide-split,
+  .datasus-guide-rule-strip,
+  .datasus-guide-filter-grid,
+  .datasus-guide-action-grid,
+  .datasus-guide-compare,
+  .datasus-guide-question-grid,
+  .datasus-guide-tab-layout { grid-template-columns: 1fr; }
+  .datasus-guide-shell { grid-template-columns: 1fr; }
+  .datasus-guide-sidebar,
+  .datasus-guide-quick-panel { position: static; }
   .module-workflow-card,
   .module-workflow-card.is-compact,
   .module-workflow-card.is-wide,
