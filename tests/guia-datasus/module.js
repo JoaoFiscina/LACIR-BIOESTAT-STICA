@@ -216,6 +216,11 @@ const SIMULATOR_DATA = {
   }
 };
 
+const ECO_PROMPT_DOWNLOAD_URL = new URL(
+  '../../assets/downloads/prompt-estudos-ecologicos-datasus.txt',
+  import.meta.url
+).href;
+
 function renderFlowSteps() {
   return FLOW_STEPS.map(step => `
     <li class="datasus-guide-progress-step">
@@ -601,6 +606,20 @@ export async function renderTestModule({ root, utils }) {
                 <p>Melhor quando a analise exige maior controle da base bruta, organizacao local, indicadores mais finos ou integracao com planilhas e analises posteriores.</p>
               </article>
             </div>
+            <article class="surface-card datasus-guide-prompt-card">
+              <div class="datasus-guide-section-head">
+                <div>
+                  <span class="section-kicker">Material &uacute;til</span>
+                  <h4>Prompt para estudos ecol&oacute;gicos com DATASUS</h4>
+                </div>
+                <span class="chip chip-primary">Arquivo est&aacute;tico</span>
+              </div>
+              <p class="datasus-guide-prompt-copy">Fun&ccedil;&atilde;o do prompt: este prompt foi criado para gerar e triar ideias de estudos ecol&oacute;gicos com base em dados p&uacute;blicos do DATASUS, priorizando temas plaus&iacute;veis, metodologicamente s&oacute;lidos e compat&iacute;veis com as vari&aacute;veis realmente dispon&iacute;veis nas bases. O objetivo &eacute; propor hip&oacute;teses fortes, vi&aacute;veis e com potencial de congresso/publica&ccedil;&atilde;o, evitando extrapola&ccedil;&otilde;es indevidas, infer&ecirc;ncias individuais a partir de dados agregados e ideias que n&atilde;o possam ser operacionalizadas com seguran&ccedil;a. Para que o desempenho seja melhor, &eacute; fundamental especificar claramente a &aacute;rea de interesse, por exemplo, cirurgia geral, oncologia cir&uacute;rgica, hepatobiliar, transplantes, vascular, trauma, ginecologia cir&uacute;rgica, urologia ou outra. Quanto mais definida a &aacute;rea, mais precisas, originais e &uacute;teis tendem a ser as ideias geradas.</p>
+              <div class="datasus-guide-prompt-actions">
+                <a class="btn" href="${ECO_PROMPT_DOWNLOAD_URL}" download="prompt-estudos-ecologicos-datasus.txt">Baixar prompt (.txt)</a>
+                <p class="small-note">Arquivo textual pronto para download direto, mantendo o conte&uacute;do completo fornecido no material-base.</p>
+              </div>
+            </article>
             <article class="info-banner">
               Depois do CSV, organize nomes, revise periodos, cheque zeros e so entao leve a planilha para os testes estatisticos do LACIRSTAT.
             </article>

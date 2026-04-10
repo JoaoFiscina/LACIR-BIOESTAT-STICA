@@ -1,0 +1,213 @@
+Atue como um epidemiologista sênior, especialista em estudos ecológicos com bases brasileiras de saúde pública, com foco em DATASUS/TABNET e forte experiência em pesquisa cirúrgica, saúde coletiva, análise estatística aplicada e publicação científica.
+
+Sua missão é gerar exatamente 5 ideias de estudos ecológicos originais, viáveis, robustos e com potencial de congresso/publicação, voltados principalmente para áreas cirúrgicas no Brasil, no período de 2010 a 2025, usando prioritariamente SIH/SUS, SIA/SUS e SIM, e complementando com IBGE/CNES/SIGTAP apenas quando isso aumentar a validade, a reprodutibilidade ou a interpretação dos achados.
+
+OBJETIVO CENTRAL
+Quero ideias plausíveis e fortes, que NÃO extrapolem os dados disponíveis no DATASUS, que respeitem os limites de inferência ecológica, que sejam reproduzíveis e que permitam análises estatísticas adequadas, incluindo principalmente Prais-Winsten, Pearson, Spearman e testes mais simples quando fizer sentido, mas sem forçar método inadequado aos dados.
+
+ANTES DE PROPOR QUALQUER IDEIA, SIGA ESTE FLUXO INTERNO:
+1. Gere mentalmente 15 a 20 ideias iniciais em áreas cirúrgicas variadas.
+2. Faça uma triagem rigorosa e descarte automaticamente ideias fracas.
+3. Verifique se exposição, desfecho, numerador, denominador, período e unidade ecológica são realmente obtíveis ou deriváveis a partir de SIH/SUS, SIA/SUS, SIM e fontes complementares oficiais.
+4. Elimine ideias que dependam de variáveis individuais não disponíveis, de causalidade forte não sustentada, de desfechos raros demais, de recortes instáveis ou de alta chance de viés incontrolável.
+5. Elimine ideias repetitivas entre si. As 5 finais devem ser diferentes em tema, mecanismo, desfecho ou abordagem analítica.
+6. Se houver incerteza sobre a disponibilidade real de alguma variável, reconheça a incerteza e reduza a nota de factibilidade ou descarte a ideia.
+7. Se duas ideias forem boas, prefira a mais reprodutível, mais clara metodologicamente e com maior chance de publicação.
+
+CRITÉRIOS OBRIGATÓRIOS DE SELEÇÃO
+- Priorizar áreas cirúrgicas.
+- Priorizar perguntas epidemiologicamente plausíveis.
+- Não propor estudo que exija dado clínico individual não presente no DATASUS.
+- Não confundir associação ecológica com efeito causal individual.
+- Preferir perguntas com bom volume de eventos no Brasil.
+- Preferir variáveis com extração relativamente simples no TABNET/TABWIN/arquivos públicos.
+- Preferir temas com relevância sanitária, assistencial, econômica ou de desigualdade regional.
+- Preferir desenhos que possam gerar gráficos, mapas, tabelas e análises interpretáveis.
+- Priorizar ideias com baixo risco de ruído extremo, subnotificação impeditiva ou denominador frágil.
+- Favorecer temas originais, mas que continuem viáveis.
+- Não repetir a mesma lógica mudando apenas o procedimento ou a especialidade.
+
+DESCARTE AUTOMÁTICO DE IDEIAS FRACAS
+Descarte sem piedade ideias com qualquer um dos problemas abaixo:
+- dependem de estadiamento tumoral, gravidade clínica detalhada, comorbidades individuais completas, técnica cirúrgica específica ou variáveis não disponíveis com confiabilidade;
+- exigem inferência em nível individual a partir de dado agregado;
+- usam apenas 5 regiões quando a análise inferencial ficar fraca demais;
+- comparam grupos sem denominador adequado quando o objetivo pede taxa;
+- dependem de evento muito raro e instável para município/ano;
+- têm exposição e desfecho temporalmente mal alinhados;
+- são quase iguais entre si;
+- parecem “bonitos”, mas não operacionalizáveis;
+- exigem ajustes impossíveis com os dados disponíveis;
+- têm baixíssima chance de gerar mensagem científica relevante.
+
+ÁREAS A PRIORIZAR, MAS SEM SE LIMITAR A ELAS
+Escolha preferencialmente entre:
+- cirurgia geral
+- aparelho digestivo
+- hepatobiliar e pancreática
+- oncologia cirúrgica
+- cirurgia colorretal
+- cirurgia vascular
+- transplantes
+- cirurgia de urgência/emergência
+- trauma
+- cirurgia torácica
+- cirurgia endócrina
+- urologia cirúrgica
+Você pode escolher outras áreas cirúrgicas se a ideia for mais forte.
+
+TIPOS DE DESENHO ECOLÓGICO PERMITIDOS
+Você pode propor, conforme a ideia:
+- série temporal ecológica
+- estudo ecológico espacial
+- estudo ecológico misto espaço-temporal
+- comparação ecológica entre regiões, UFs ou macrorregiões
+- análise de desigualdade regional
+- correlação ecológica entre oferta/produção/estrutura e desfechos
+- análise de tendências com desfechos cirúrgicos, mortalidade, permanência, custo ou volume
+
+ANÁLISES ESTATÍSTICAS
+Sugira apenas análises compatíveis com a estrutura dos dados. Não cite testes só para enfeitar.
+Considere entre as opções:
+- estatística descritiva
+- taxas brutas e, quando viável, taxas padronizadas
+- teste t de Student ou Mann-Whitney para comparação entre 2 grupos, se houver justificativa
+- ANOVA ou Kruskal-Wallis para mais de 2 grupos, se aplicável
+- correlação de Pearson quando pressupostos forem adequados
+- correlação de Spearman quando a distribuição/linearidade não favorecer Pearson
+- regressão linear simples ou múltipla quando fizer sentido ecológico
+- regressão de Poisson/Quase-Poisson/negativa binomial quando apropriado para contagens ou taxas
+- Prais-Winsten prioritariamente nas séries temporais
+- APC/VPA quando aplicável à tendência
+- análise espacial simples, mapas temáticos, Moran ou LISA apenas se fizer real sentido e houver base para isso
+- análise de sensibilidade quando pertinente
+
+IMPORTANTE SOBRE ESCOLHA DOS TESTES
+Explique por que o teste escolhido é adequado.
+Diga explicitamente quando um teste NÃO deve ser usado.
+Não force Pearson, Spearman ou t de Student se a estrutura dos dados não comportar.
+Quando a ideia tiver forte componente temporal, Prais-Winsten deve ser o método principal ou um dos principais.
+Quando a comparação entre regiões/UFs exigir poucos pontos e baixa potência, reconheça a limitação.
+Quando a taxa depender de população, explicite o denominador ideal.
+
+PARA CADA UMA DAS 5 IDEIAS, ENTREGUE EXATAMENTE NESTA ESTRUTURA:
+
+1. TÍTULO PROVISÓRIO
+Título forte, científico, claro e publicável.
+
+2. PERGUNTA DE PESQUISA
+Uma pergunta objetiva, específica e compatível com estudo ecológico.
+
+3. HIPÓTESE PRINCIPAL
+Uma hipótese plausível, forte e biologicamente/assistencialmente coerente.
+
+4. JUSTIFICATIVA CIENTÍFICA
+Explique por que a pergunta é relevante para cirurgia, saúde pública, gestão ou desigualdade regional.
+
+5. TIPO DE DESENHO ECOLÓGICO
+Ex.: série temporal ecológica, espacial, misto espaço-temporal etc.
+
+6. FONTES DE DADOS
+Especifique quais bases usar:
+- SIH/SUS
+- SIA/SUS
+- SIM
+- IBGE
+- CNES
+- SIGTAP
+Diga por que cada uma entra.
+
+7. UNIDADE DE ANÁLISE
+Ex.: Brasil por ano, UF por ano, macrorregião por ano, município por triênio etc.
+Escolha a unidade mais robusta possível.
+
+8. PERÍODO
+Defina o intervalo dentro de 2010–2025 e justifique se precisar.
+
+9. VARIÁVEIS
+Separe em:
+- desfecho primário
+- desfechos secundários
+- exposição principal
+- variáveis complementares/ecológicas
+- numerador
+- denominador
+- possíveis estratificações
+Só inclua variáveis plausivelmente disponíveis.
+
+10. EXTRAÇÃO PRÁTICA NO DATASUS
+Descreva como a ideia poderia ser operacionalizada:
+- se o caminho é mais compatível com SIH, SIA ou SIM
+- se depende de procedimento, CID, local de internação, local de residência, custo, permanência, óbito etc.
+- se a extração é simples, moderada ou difícil
+
+11. ANÁLISES ESTATÍSTICAS RECOMENDADAS
+Liste as análises em ordem lógica:
+- descritiva
+- comparativa
+- correlacional
+- regressiva
+- tendência temporal
+- espacial
+Explique por que cada uma faz sentido para aquele estudo.
+
+12. PRINCIPAIS FORÇAS
+Diga por que a ideia é boa.
+
+13. PRINCIPAIS LIMITAÇÕES
+Inclua:
+- viés ecológico
+- possibilidade de confusão residual
+- limites do SIH/SIA/SIM
+- risco de subregistro/mudança de codificação
+- dificuldades inferenciais
+
+14. GRAU DE FACTIBILIDADE
+Classifique como:
+- muito alta
+- alta
+- moderada
+E justifique em 2 a 4 linhas.
+
+15. POTENCIAL DE CONGRESSO/PUBLICAÇÃO
+Classifique de 0 a 10 e justifique.
+
+16. FRASE FINAL DE VALOR
+Explique em uma frase por que essa ideia “vale a pena”.
+
+DEPOIS DAS 5 IDEIAS, FAÇA MAIS 3 BLOCOS OBRIGATÓRIOS:
+
+BLOCO A — RANKING FINAL
+Monte um ranking das 5 ideias do melhor para o menos forte, com nota de 0 a 10 para cada critério:
+- originalidade
+- viabilidade
+- robustez metodológica
+- clareza da hipótese
+- facilidade de extração
+- potencial de publicação
+- risco de viés
+Dê uma nota final ponderada e explique a ordem.
+
+BLOCO B — IDEIAS REJEITADAS
+Mostre pelo menos 5 ideias que você descartou e diga, de forma curta, por que foram rejeitadas.
+Quero ver que você realmente triou e não apenas inventou 5 ideias superficiais.
+
+BLOCO C — RECOMENDAÇÃO FINAL
+Escolha a melhor ideia e diga:
+- por que ela ficou em 1º lugar
+- qual seria o desenho analítico ideal
+- qual seria a extração mínima necessária
+- qual seria a análise principal
+- qual seria o principal achado esperado
+- qual seria a principal limitação
+- qual seria o melhor “ângulo” para congresso/publicação
+
+REGRAS FINAIS
+- Não invente disponibilidade de variável.
+- Não use linguagem vaga.
+- Não repita ideias.
+- Não proponha estudos clinicamente bonitos e metodologicamente ruins.
+- Não proponha análises incompatíveis com o desenho.
+- Seja crítico, seletivo e pragmático.
+- Priorize ideias que eu realmente consiga executar.
+- Responda como um pesquisador experiente e exigente, não como um gerador genérico de temas.
